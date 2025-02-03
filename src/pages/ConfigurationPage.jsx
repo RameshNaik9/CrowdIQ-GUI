@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../components/common/Header";
 import RTSPSetup from "../components/configuration/RTSPSetup";
+import CameraCard from "../components/configuration/CameraCard"; // Import CameraCard
 
 const cameraTypes = [
   { id: "rtsp", name: "RTSP" },
@@ -9,12 +10,40 @@ const cameraTypes = [
   { id: "webrtc", name: "WebRTC" },
 ];
 
+// Sample Connection History Data
+const demoCameras = [
+  {
+    name: "Entrance Camera",
+    location: "Main Gate",
+    stream_link: "rtsp://example.com/stream1",
+    username: "admin",
+    password: "pass123",
+    ip_address: "192.168.1.10",
+    port: "554",
+    channel_number: "1",
+    stream_type: "main",
+    last_active: new Date().toLocaleString(),
+    status: "online",
+  },
+  {
+    name: "Lobby Camera",
+    location: "Building Lobby",
+    stream_link: "rtsp://example.com/stream2",
+    username: "user",
+    password: "pass456",
+    ip_address: "192.168.1.20",
+    port: "554",
+    channel_number: "2",
+    stream_type: "sub",
+    last_active: new Date().toLocaleString(),
+    status: "offline",
+  },
+];
+
 const ConfigurationPage = () => {
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [connectionHistory, setConnectionHistory] = useState(
-    JSON.parse(localStorage.getItem("cameraConnections")) || []
-  );
+  const [connectionHistory] = useState(demoCameras);
 
   const handleCameraSelection = (cameraId) => {
     setSelectedCamera(cameraId);
@@ -69,16 +98,9 @@ const ConfigurationPage = () => {
 
         {/* Connection History */}
         <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
-        <div className="bg-gray-800 p-4 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {connectionHistory.length > 0 ? (
-            <ul className="space-y-2">
-              {connectionHistory.map((camera, index) => (
-                <li key={index} className="p-2 bg-gray-700 rounded-lg flex justify-between">
-                  <span className="text-white">{camera.name} ({camera.ip_address})</span>
-                  <button className="text-red-400 hover:text-red-500 transition">Remove</button>
-                </li>
-              ))}
-            </ul>
+            connectionHistory.map((camera, index) => <CameraCard key={index} camera={camera} />)
           ) : (
             <p className="text-gray-400">No previous connections found.</p>
           )}
