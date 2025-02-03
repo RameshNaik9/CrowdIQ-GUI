@@ -13,6 +13,7 @@ const cameraTypes = [
 // Sample Connection History Data
 const demoCameras = [
   {
+    id: 1,
     name: "Entrance Camera",
     location: "Main Gate",
     stream_link: "rtsp://example.com/stream1",
@@ -26,6 +27,7 @@ const demoCameras = [
     status: "online",
   },
   {
+    id: 2,
     name: "Lobby Camera",
     location: "Building Lobby",
     stream_link: "rtsp://example.com/stream2",
@@ -43,7 +45,7 @@ const demoCameras = [
 const ConfigurationPage = () => {
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [connectionHistory] = useState(demoCameras);
+  const [expandedCard, setExpandedCard] = useState(null); // Track expanded card
 
   const handleCameraSelection = (cameraId) => {
     setSelectedCamera(cameraId);
@@ -99,8 +101,15 @@ const ConfigurationPage = () => {
         {/* Connection History */}
         <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {connectionHistory.length > 0 ? (
-            connectionHistory.map((camera, index) => <CameraCard key={index} camera={camera} />)
+          {demoCameras.length > 0 ? (
+            demoCameras.map((camera) => (
+              <CameraCard
+                key={camera.id}
+                camera={camera}
+                expanded={expandedCard === camera.id}
+                onToggleExpand={() => setExpandedCard(expandedCard === camera.id ? null : camera.id)}
+              />
+            ))
           ) : (
             <p className="text-gray-400">No previous connections found.</p>
           )}

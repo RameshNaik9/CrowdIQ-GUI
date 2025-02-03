@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { ChevronDown, ChevronUp, Link2, Circle } from "lucide-react";
 
-const CameraCard = ({ camera }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+const CameraCard = ({ camera, expanded, onToggleExpand }) => {
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow-md transition-all">
       {/* Camera Basic Info */}
@@ -23,11 +20,11 @@ const CameraCard = ({ camera }) => {
       {/* View More + Connect Buttons */}
       <div className="flex justify-between items-center mt-4">
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={onToggleExpand}
           className="text-blue-400 hover:text-blue-500 flex items-center text-sm transition"
         >
-          {isExpanded ? "Hide Details" : "View Details"}
-          {isExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+          {expanded ? "Hide Details" : "View Details"}
+          {expanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
         </button>
 
         <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition">
@@ -37,7 +34,7 @@ const CameraCard = ({ camera }) => {
       </div>
 
       {/* Expanded Camera Details (Only Expands When Needed) */}
-      {isExpanded && (
+      {expanded && (
         <div className="mt-4 text-gray-300 text-sm space-y-2">
           <p><strong>IP Address:</strong> {camera.ip_address}</p>
           <p><strong>Port:</strong> {camera.port}</p>
