@@ -39,7 +39,7 @@ const AnalyticsPage = () => {
     // Store selections in localStorage to persist after refresh
     localStorage.setItem("selectedDateRange", selectedDateRange);
     localStorage.setItem("selectedCamera", selectedCamera);
-    if (selectedDateRange === "Custom") {
+    if (selectedDateRange.includes("-")) {
       localStorage.setItem("startDate", dateRange[0].startDate);
       localStorage.setItem("endDate", dateRange[0].endDate);
     }
@@ -72,8 +72,9 @@ const AnalyticsPage = () => {
               <select
                 value={selectedDateRange}
                 onChange={(e) => {
-                  setSelectedDateRange(e.target.value);
-                  setShowDatePicker(e.target.value === "Custom");
+                  const value = e.target.value;
+                  setSelectedDateRange(value);
+                  setShowDatePicker(value === "Custom");
                 }}
                 className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
               >
