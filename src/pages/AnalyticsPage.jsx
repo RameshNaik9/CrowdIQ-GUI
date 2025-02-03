@@ -6,6 +6,7 @@ import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
 import VisitorSegmentationChart from "../components/analytics/VisitorSegmentationChart";
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
 import VisitorEngagementHeatmap from "../components/analytics/VisitorEngagementHeatmap";
+import AgeRangeDistributionChart from "../components/analytics/AgeRangeDistributionChart";
 import AIPoweredInsights from "../components/analytics/AIPoweredInsights";
 import { Calendar, Camera, X, Check } from "lucide-react";
 import { DateRange } from "react-date-range";
@@ -146,6 +147,7 @@ const AnalyticsPage = () => {
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
           <VisitorEngagementHeatmap />
+		  <AgeRangeDistributionChart />
         </div>
 
         <AIPoweredInsights />
