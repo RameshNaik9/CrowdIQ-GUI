@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/common/Sidebar";
-
+import HomePage from "./pages/HomePage";
 import OverviewPage from "./pages/OverviewPage";
 import UsersPage from "./pages/UsersPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
@@ -22,7 +22,7 @@ function App() {
 
 			<Sidebar />
 			<Routes>
-				{/* <Route path='/' element={<OverviewPage />} /> */}
+				<Route path='/' element={<HomePage />} />
 				<Route path='/camera-configuration' element={<ConfigurationPage/>} />
 				<Route path='/live-monitoring' element={<LiveMonitoringPage/>} />
 				<Route path='/analytics' element={<AnalyticsPage />} />

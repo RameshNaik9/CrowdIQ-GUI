@@ -1,5 +1,5 @@
 import Header from "../components/common/Header";
-import RawDataTable from "../components/logs/RawDataTable";
+import RawDataTable from "../components/datalogs/RawDataTable";
 
 const RawDataLogsPage = () => {
   return (
