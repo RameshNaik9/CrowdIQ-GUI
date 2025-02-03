@@ -55,8 +55,13 @@ const AnalyticsPage = () => {
 
         <OverviewCards />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Visitor Trends (Hourly) - Full Width */}
+        <div className="col-span-2 mb-8">
           <VisitorTrendChart />
+        </div>
+
+        {/* Remaining Charts in 2x2 Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <EntryExitFlowChart />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
