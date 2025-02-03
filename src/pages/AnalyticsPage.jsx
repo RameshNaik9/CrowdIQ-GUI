@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/common/Header";
 import OverviewCards from "../components/analytics/OverviewCards";
 import VisitorTrendChart from "../components/analytics/VisitorTrendChart";
@@ -7,7 +7,7 @@ import VisitorSegmentationChart from "../components/analytics/VisitorSegmentatio
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
 import VisitorEngagementHeatmap from "../components/analytics/VisitorEngagementHeatmap";
 import AIPoweredInsights from "../components/analytics/AIPoweredInsights";
-import { Calendar, Camera, X } from "lucide-react";
+import { Calendar, Camera, X, Check } from "lucide-react";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css"; // Default styles
 import "react-date-range/dist/theme/default.css"; // Theme styles
@@ -19,16 +19,44 @@ const demoCameras = [
 ];
 
 const AnalyticsPage = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState("Last 7 Days");
-  const [selectedCamera, setSelectedCamera] = useState(demoCameras[0].id);
+  const [selectedDateRange, setSelectedDateRange] = useState(() =>
+    localStorage.getItem("selectedDateRange") || "Last 7 Days"
+  );
+  const [selectedCamera, setSelectedCamera] = useState(() =>
+    localStorage.getItem("selectedCamera") || demoCameras[0].id
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: new Date(localStorage.getItem("startDate") || new Date()),
+      endDate: new Date(localStorage.getItem("endDate") || new Date()),
       key: "selection",
     },
   ]);
+  const [data, setData] = useState(null); // Placeholder for fetched data
+
+  useEffect(() => {
+    // Store selections in localStorage to persist after refresh
+    localStorage.setItem("selectedDateRange", selectedDateRange);
+    localStorage.setItem("selectedCamera", selectedCamera);
+    if (selectedDateRange === "Custom") {
+      localStorage.setItem("startDate", dateRange[0].startDate);
+      localStorage.setItem("endDate", dateRange[0].endDate);
+    }
+
+    // 🔥 **Simulated API Fetch (Replace with real API call)**
+    console.log(`Fetching data for ${selectedDateRange}, Camera ID: ${selectedCamera}`);
+    setTimeout(() => {
+      setData({ message: "New data loaded!" });
+    }, 500); // Simulate delay
+  }, [selectedDateRange, selectedCamera]);
+
+  const applyCustomDate = () => {
+    const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
+    setSelectedDateRange(formattedDateRange);
+    setShowDatePicker(false);
+    localStorage.setItem("selectedDateRange", formattedDateRange);
+  };
 
   return (
     <div className="flex-1 overflow-auto relative z-10 bg-gray-900">
@@ -45,8 +73,7 @@ const AnalyticsPage = () => {
                 value={selectedDateRange}
                 onChange={(e) => {
                   setSelectedDateRange(e.target.value);
-                  if (e.target.value === "Custom") setShowDatePicker(true);
-                  else setShowDatePicker(false);
+                  setShowDatePicker(e.target.value === "Custom");
                 }}
                 className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
               >
@@ -71,6 +98,13 @@ const AnalyticsPage = () => {
                   rangeColors={["#3B82F6"]}
                   className="text-gray-200"
                 />
+                <button
+                  onClick={applyCustomDate}
+                  className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
+                >
+                  <Check size={16} className="mr-2" />
+                  Apply Date Range
+                </button>
               </div>
             )}
           </div>
@@ -80,7 +114,10 @@ const AnalyticsPage = () => {
             <Camera size={20} className="text-gray-400" />
             <select
               value={selectedCamera}
-              onChange={(e) => setSelectedCamera(e.target.value)}
+              onChange={(e) => {
+                setSelectedCamera(e.target.value);
+                localStorage.setItem("selectedCamera", e.target.value);
+              }}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
             >
               {demoCameras.map((camera) => (
@@ -89,6 +126,11 @@ const AnalyticsPage = () => {
             </select>
           </div>
         </div>
+
+        {/* Data Fetch Message (Demo) */}
+        {data && (
+          <p className="text-green-400 text-sm text-center mb-4">{data.message}</p>
+        )}
 
         <OverviewCards />
 
