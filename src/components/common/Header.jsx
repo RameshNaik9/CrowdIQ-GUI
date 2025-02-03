@@ -9,7 +9,7 @@ const Header = ({ title }) => {
                 </div>
 
                 {/* Right Side: Page Title */}
-                <h1 className='text-2xl font-semibold text-gray-100'>{title}</h1>
+                <h1 className='text-2xl font text-gray-100'>{title}</h1>
             </div>
         </header>
     );

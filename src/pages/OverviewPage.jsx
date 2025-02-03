@@ -1,40 +1,84 @@
-import { BarChart2, ShoppingBag, Users, Zap } from "lucide-react";
+import { useState } from "react";
+import { Users, UserCheck, Clock, BarChart2, Calendar, Camera } from "lucide-react";
 import { motion } from "framer-motion";
-
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
-import SalesOverviewChart from "../components/overview/SalesOverviewChart";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesChannelChart from "../components/overview/SalesChannelChart";
+import VisitorTrendChart from "../components/overview/VisitorTrendChart";
+import AgeDistributionChart from "../components/overview/AgeDistributionChart";
+import GenderDistributionChart from "../components/overview/GenderDistributionChart";
+import DwellTimeChart from "../components/overview/DwellTimeChart";
+
+const demoCameras = [
+  { id: "1", name: "Main Entrance" },
+  { id: "2", name: "Lobby" },
+  { id: "3", name: "Parking Area" },
+];
 
 const OverviewPage = () => {
-	return (
-		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title='Overview' />
+  const [selectedDateRange, setSelectedDateRange] = useState("Today");
+  const [selectedCamera, setSelectedCamera] = useState(demoCameras[0].id);
 
-			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
-				{/* STATS */}
-				<motion.div
-					className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8'
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 1 }}
-				>
-					<StatCard name='Total Sales' icon={Zap} value='$12,345' color='#6366F1' />
-					<StatCard name='New Users' icon={Users} value='1,234' color='#8B5CF6' />
-					<StatCard name='Total Products' icon={ShoppingBag} value='567' color='#EC4899' />
-					<StatCard name='Conversion Rate' icon={BarChart2} value='12.5%' color='#10B981' />
-				</motion.div>
+  return (
+    <div className="flex-1 overflow-auto relative z-10">
+      {/* Header */}
+      <Header title="Overview" />
 
-				{/* CHARTS */}
+      <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
+        {/* Filters: Date & Camera Selection */}
+        <div className="flex justify-between items-center mb-6">
+          {/* Date Selector */}
+          <div className="flex items-center space-x-3">
+            <Calendar size={20} className="text-gray-400" />
+            <select
+              value={selectedDateRange}
+              onChange={(e) => setSelectedDateRange(e.target.value)}
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+            >
+              <option>Today</option>
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+              <option>Custom</option>
+            </select>
+          </div>
 
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-					<SalesOverviewChart />
-					<CategoryDistributionChart />
-					<SalesChannelChart />
-				</div>
-			</main>
-		</div>
-	);
+          {/* Camera Selector */}
+          <div className="flex items-center space-x-3">
+            <Camera size={20} className="text-gray-400" />
+            <select
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value)}
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+            >
+              {demoCameras.map((camera) => (
+                <option key={camera.id} value={camera.id}>{camera.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* KPI Cards */}
+        <motion.div
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <StatCard name="Total Visitors" icon={Users} value="2,345" color="#6366F1" />
+          <StatCard name="Male Visitors" icon={UserCheck} value="1,245" color="#8B5CF6" />
+          <StatCard name="Avg. Dwell Time" icon={Clock} value="14m 32s" color="#EC4899" />
+          <StatCard name="Avg. Age" icon={BarChart2} value="29 Years" color="#10B981" />
+        </motion.div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <VisitorTrendChart />
+          <GenderDistributionChart />
+          <AgeDistributionChart />
+          <DwellTimeChart />
+        </div>
+      </main>
+    </div>
+  );
 };
+
 export default OverviewPage;
