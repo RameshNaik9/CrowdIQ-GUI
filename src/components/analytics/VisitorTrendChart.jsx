@@ -40,7 +40,17 @@ const VisitorTrendChart = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
             <XAxis dataKey="time" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "rgba(31, 41, 55, 0.8)",
+                borderColor: "#4B5563",
+              }}
+              itemStyle={{ color: "#E5E7EB" }}
+              formatter={(value, name) => {
+                const color = name === "today" ? "#8B5CF6" : "#10B981";
+                return <span style={{ color }}>{value}</span>;
+              }}
+            />
             <Legend />
             <Area type="monotone" dataKey="today" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.3} />
             <Area type="monotone" dataKey="lastWeek" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
