@@ -2,16 +2,13 @@ import { Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/common/Sidebar";
 
-// import OverviewPage from "./pages/OverviewPage-old";
 import OverviewPage from "./pages/OverviewPage";
-import ProductsPage from "./pages/ProductsPage";
 import UsersPage from "./pages/UsersPage";
-import SalesPage from "./pages/SalesPage";
-import OrdersPage from "./pages/OrdersPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import LiveMonitoringPage from "./pages/LiveMonitoringPage";
+import RawDataLogsPage from "./pages/RawDataLogsPage";
 
 
 function App() {
@@ -25,14 +22,13 @@ function App() {
 
 			<Sidebar />
 			<Routes>
-				<Route path='/' element={<OverviewPage />} />
+				{/* <Route path='/' element={<OverviewPage />} /> */}
 				<Route path='/camera-configuration' element={<ConfigurationPage/>} />
 				<Route path='/live-monitoring' element={<LiveMonitoringPage/>} />
-				<Route path='/products' element={<ProductsPage />} />
-				<Route path='/users' element={<UsersPage />} />
-				<Route path='/sales' element={<SalesPage />} />
-				<Route path='/orders' element={<OrdersPage />} />
 				<Route path='/analytics' element={<AnalyticsPage />} />
+				<Route path='/overview' element={<OverviewPage/>} />
+				<Route path="/raw-data-logs" element={<RawDataLogsPage />} /> 
+				<Route path='/users' element={<UsersPage />} />
 				<Route path='/settings' element={<SettingsPage />} />
 			</Routes>
 		</div>
