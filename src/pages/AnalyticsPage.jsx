@@ -5,7 +5,7 @@ import VisitorTrendChart from "../components/analytics/VisitorTrendChart";
 import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
 import VisitorSegmentationChart from "../components/analytics/VisitorSegmentationChart";
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
-import VisitorEngagementHeatmap from "../components/analytics/VisitorEngagementHeatmap";
+// import VisitorEngagementHeatmap from "../components/analytics/VisitorEngagementHeatmap";
 import AgeRangeDistributionChart from "../components/analytics/AgeRangeDistributionChart";
 import AIPoweredInsights from "../components/analytics/AIPoweredInsights";
 import { Calendar, Camera, X, Check } from "lucide-react";
@@ -146,8 +146,8 @@ const AnalyticsPage = () => {
           <EntryExitFlowChart />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
-          <VisitorEngagementHeatmap />
-		  <AgeRangeDistributionChart />
+          {/* <VisitorEngagementHeatmap /> */}
+      <AgeRangeDistributionChart />
         </div>
 
         <AIPoweredInsights />

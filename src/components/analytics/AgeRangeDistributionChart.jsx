@@ -6,6 +6,8 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
+  PolarRadiusAxis,
+  Legend,
   Tooltip,
 } from "recharts";
 
@@ -17,14 +19,14 @@ const ageRangeData = [
   { ageGroup: "50+", total: 300, males: 140, females: 160 },
 ];
 
-// ✅ Custom Tooltip Component
+// ✅ Custom Tooltip Component with Matching UI
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const { ageGroup, total, males, females } = payload[0].payload;
     return (
-      <div className="bg-gray-900 text-gray-200 p-3 rounded-lg shadow-lg border border-gray-700">
-        <h4 className="text-sm font-semibold text-blue-400">{ageGroup} Age Group</h4>
-        <p className="text-xs">👥 Total: <span className="font-bold">{total}</span></p>
+      <div className="bg-gray-900 p-3 rounded-lg shadow-md border border-gray-700 text-gray-300">
+        <h4 className="text-sm font-medium text-blue-400">{ageGroup} Age Group</h4>
+        <p className="text-xs">👥 Total Visitors: <span className="font-bold">{total}</span></p>
         <p className="text-xs text-blue-400">👨 Males: <span className="font-bold">{males}</span></p>
         <p className="text-xs text-pink-400">👩 Females: <span className="font-bold">{females}</span></p>
       </div>
@@ -37,14 +39,10 @@ const AgeRangeDistributionChart = () => {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
 
   return (
-    <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg shadow-lg rounded-xl p-6 border border-gray-700"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 }}
-    >
-      <h2 className="text-xl font-semibold text-gray-100 mb-4">Age Range Distribution</h2>
-      <div className="w-full h-72">
+    <motion.div className="bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-700">
+      <h2 className="text-lg font-medium text-gray-100 mb-4">Age Range Distribution</h2>
+
+      <div className="h-80">
         <ResponsiveContainer>
           <RadarChart
             cx="50%"
@@ -55,8 +53,10 @@ const AgeRangeDistributionChart = () => {
           >
             <PolarGrid stroke="#374151" />
             <PolarAngleAxis dataKey="ageGroup" stroke="#9CA3AF" />
-            <Tooltip content={<CustomTooltip />} />
+            <PolarRadiusAxis angle={30} domain={[0, 600]} stroke="#9CA3AF" />
             <Radar name="Total Visitors" dataKey="total" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
+            <Legend />
+            <Tooltip content={<CustomTooltip />} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
