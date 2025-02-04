@@ -7,9 +7,9 @@ const HomePage = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90" />
       <div className="absolute inset-0 backdrop-blur-sm" />
 
-      {/* Branding: Name + Tagline (Shifted Upwards) */}
+      {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
-        className="flex flex-col items-center z-10 text-center transform -translate-y-16" // Adjusted for more upper placement
+        className="absolute top-40 flex flex-col items-center z-10 text-center" // Positioned at the top
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
@@ -35,7 +35,7 @@ const HomePage = () => {
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"
-          className="h-36 w-36 md:h-48 md:w-48 opacity-100"
+          className="h-48 w-48 md:h-56 md:w-56 opacity-100"
         />
       </motion.div>
     </div>
