@@ -57,8 +57,8 @@ const HomePage = () => {
         <p className="text-gray-500 text-lg italic tracking-wide font-serif">
           Powered by
         </p>
-        {/* 🌟 Glow effect using a pseudo-element (div behind logo) */}
-        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 bg-blue-500 opacity-20 blur-3xl rounded-full z-0" />
+        {/* 🌟 Glow effect using a gradient for smooth fade */}
+        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 bg-gradient-to-t from-blue-500 to-transparent opacity-20 blur-3xl rounded-full z-0" />
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"
