@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import Sidebar from "./components/common/Sidebar";
 import HomePage from "./pages/HomePage";
@@ -12,6 +12,8 @@ import RawDataLogsPage from "./pages/RawDataLogsPage";
 
 
 function App() {
+	const location = useLocation(); // Get the current page location
+
 	return (
 		// <div className='flex h-screen bg-gray-900 text-gray-100 overflow-hidden'>
 		<div className="flex h-screen bg-gray-900 text-gray-100 overflow-hidden">
