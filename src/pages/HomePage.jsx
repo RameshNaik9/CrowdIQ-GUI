@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowRightCircle } from "lucide-react";
 
 const HomePage = () => {
   return (
@@ -11,7 +9,7 @@ const HomePage = () => {
 
       {/* Branding: Name + Tagline (Shifted Upwards) */}
       <motion.div
-        className="flex flex-col items-center z-10 text-center transform -translate-y-10" // Adjusted translate-y value
+        className="flex flex-col items-center z-10 text-center transform -translate-y-16" // Adjusted for more upper placement
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
@@ -19,32 +17,14 @@ const HomePage = () => {
         <h1 className="text-6xl md:text-8xl font-extrabold text-white tracking-wide">
           C r o w d I Q
         </h1>
-        <p className="text-gray-400 text-sm md:text-base mt-2 tracking-wide uppercase">
+        <p className="text-gray-400 text-xs md:text-sm mt-2 tracking-wide ">
           See beyond the crowd
         </p>
       </motion.div>
 
-      {/* Call to Action */}
-      <motion.div
-        className="mt-10"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 1 }}
-      >
-        <Link to="/overview">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg text-lg font-semibold transition"
-          >
-            Explore Platform <ArrowRightCircle size={24} />
-          </motion.button>
-        </Link>
-      </motion.div>
-
       {/* Powered by DevelMo (Reduced Logo Size & Cursive Font) */}
       <motion.div
-        className="absolute bottom-12 flex flex-col items-center z-10"
+        className="absolute bottom-10 flex flex-col items-center z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
@@ -55,7 +35,7 @@ const HomePage = () => {
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"
-          className="h-40 w-40 md:h-56 md:w-56 opacity-90"
+          className="h-36 w-36 md:h-48 md:w-48 opacity-100"
         />
       </motion.div>
     </div>
