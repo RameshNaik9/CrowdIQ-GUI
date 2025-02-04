@@ -10,30 +10,30 @@ const HomePage = () => {
 
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
-        className="absolute top-36 flex flex-col items-center z-10 text-center"
+        className="absolute top-32 flex flex-col items-center z-10 text-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
         <h1
-          className="text-8xl md:text-10xl font-extrabold tracking-wide"
+          className="text-9xl md:text-[10rem] font-extrabold tracking-wide"
           style={{
-            textShadow: "3px 3px 10px rgba(0, 0, 0, 0.8), 0px 0px 15px rgba(59, 130, 246, 0.6)",
-            transform: "perspective(500px) rotateX(0deg)",
+            textShadow: "4px 4px 12px rgba(0, 0, 0, 0.9), 0px 0px 20px rgba(59, 130, 246, 0.8)",
+            transform: "perspective(600px) rotateX(0deg)",
           }}
         >
           C r o w d I Q
         </h1>
-        <p className="text-gray-400 text-xs md:text-sm mt-2 tracking-wide ">
+        <p className="text-gray-400 text-sm md:text-base mt-2 tracking-wide ">
           See beyond the crowd
         </p>
 
-        {/* Login and Explore Button */}
+        {/* Login and Explore Button (Moved Down) */}
         <Link to="/overview">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="mt-6 px-6 py-3 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
+            className="mt-12 px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
           >
             Login and Explore
           </motion.button>
@@ -53,7 +53,7 @@ const HomePage = () => {
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"
-          className="h-48 w-48 md:h-56 md:w-56 opacity-100"
+          className="h-40 w-40 md:h-56 md:w-56 opacity-100"
         />
       </motion.div>
     </div>
