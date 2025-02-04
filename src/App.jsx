@@ -1,5 +1,6 @@
 import { Route, Routes, useLocation, BrowserRouter } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google"; // Import GoogleOAuthProvider
+import { useState, useEffect } from "react";
+import { GoogleOAuthProvider } from "@react-oauth/google"; // Google Auth Provider
 import Sidebar from "./components/common/Sidebar";
 import HomePage from "./pages/HomePage";
 import OverviewPage from "./pages/OverviewPage";
@@ -12,7 +13,16 @@ import RawDataLogsPage from "./pages/RawDataLogsPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
-	const location = useLocation(); // Get the current page location
+	const location = useLocation();
+	const [user, setUser] = useState(null);
+
+	// Load user from localStorage if exists
+	useEffect(() => {
+		const storedUser = localStorage.getItem("user");
+		if (storedUser) {
+			setUser(JSON.parse(storedUser));
+		}
+	}, []);
 
 	return (
 		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -35,7 +45,7 @@ function App() {
 					<Route path="/raw-data-logs" element={<RawDataLogsPage />} /> 
 					<Route path='/users' element={<UsersPage />} />
 					<Route path='/settings' element={<SettingsPage />} />
-					<Route path='/login' element={<LoginPage />} />
+					<Route path='/login' element={<LoginPage setUser={setUser} />} />
 				</Routes>
 			</div>
 		</GoogleOAuthProvider>

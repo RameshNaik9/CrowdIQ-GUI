@@ -1,4 +1,3 @@
-// import React from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { googleAuth } from "../../services/api"; // Import API function
 import { FcGoogle } from "react-icons/fc";
@@ -16,14 +15,17 @@ const GoogleLogin = ({ setUser }) => {
                 // Store user details & token
                 setUser(result.data.data.user);
                 localStorage.setItem("token", result.data.token);
+                localStorage.setItem("user", JSON.stringify(result.data.data.user));
 
-                // Redirect to Overview Page
-                window.location.href = "/overview";
+                // Redirect to Camera Configuration Page
+                window.location.href = "/camera-configuration";
             } else {
+                alert("Google Authentication Failed. Please try again.");
                 throw new Error("Google Auth failed");
             }
         } catch (error) {
             console.error("Google Login Error:", error);
+            alert("Login Unsuccessful! Please try again.");
         }
     };
 
