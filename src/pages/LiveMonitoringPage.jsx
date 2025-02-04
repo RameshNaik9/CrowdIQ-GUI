@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../components/common/Header";
 import "@fontsource/orbitron";
+import { Switch } from "@headlessui/react"; // ✅ Web3-style toggle switch
 
 const cameraData = {
   name: "Entrance Camera",
@@ -26,28 +27,27 @@ const LiveMonitoringPage = () => {
       <Header title="Live Monitoring" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
-        {/* Video Mode Toggle */}
-        <div className="flex justify-center gap-4 mb-6">
-          <button
-            onClick={() => setVideoMode("live")}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              videoMode === "live" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+        {/* Web3 Toggle Button */}
+        <div className="flex justify-center items-center gap-4 mb-6">
+          <span className="text-gray-400 text-lg font-medium">Live Video</span>
+          <Switch
+            checked={videoMode === "processed"}
+            onChange={() => setVideoMode(videoMode === "live" ? "processed" : "live")}
+            className={`relative inline-flex h-8 w-16 items-center rounded-full transition duration-300 ${
+              videoMode === "processed" ? "bg-blue-600" : "bg-gray-700"
             }`}
           >
-            Live Video
-          </button>
-          <button
-            onClick={() => setVideoMode("processed")}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              videoMode === "processed" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            Processed Video
-          </button>
+            <span
+              className={`absolute left-1 inline-block h-6 w-6 transform rounded-full bg-white transition ${
+                videoMode === "processed" ? "translate-x-8" : "translate-x-0"
+              }`}
+            />
+          </Switch>
+          <span className="text-gray-400 text-lg font-medium">Processed Video</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Video Player */}
+          {/* Left: Video Player (Only One Video at a Time) */}
           <div className="lg:col-span-2 bg-gray-900 p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-100 mb-4">
               {videoMode === "live" ? "Live Camera Stream" : "Processed Video Stream"}
@@ -61,7 +61,7 @@ const LiveMonitoringPage = () => {
             />
           </div>
 
-          {/* Right: Camera Details (With Digital Font) */}
+          {/* Right: Camera Details (Digital Font) */}
           <div className="bg-gray-800 p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-100 mb-4">Camera Details</h2>
             <ul className="space-y-2 text-gray-300 font-orbitron text-lg tracking-wider">
