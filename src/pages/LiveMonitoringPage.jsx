@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "../components/common/Header";
+import "@fontsource/orbitron";
 
 const cameraData = {
   name: "Entrance Camera",
@@ -60,10 +61,10 @@ const LiveMonitoringPage = () => {
             />
           </div>
 
-          {/* Right: Camera Details */}
+          {/* Right: Camera Details (With Digital Font) */}
           <div className="bg-gray-800 p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-100 mb-4">Camera Details</h2>
-            <ul className="space-y-2 text-gray-300">
+            <ul className="space-y-2 text-gray-300 font-orbitron text-lg tracking-wider">
               <li><strong>Name:</strong> {cameraData.name}</li>
               <li><strong>Location:</strong> {cameraData.location}</li>
               <li><strong>IP Address:</strong> {cameraData.ip_address}</li>
