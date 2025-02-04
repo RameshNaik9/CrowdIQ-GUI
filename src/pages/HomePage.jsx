@@ -6,7 +6,7 @@ const HomePage = () => {
     <div className="relative w-full h-screen flex flex-col justify-center items-center bg-gray-900 text-white">
       {/* Background Gradient & Blur */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90" />
-      <div className="absolute inset-0 backdrop-blur-sm z-0" /> {/* Set z-0 to ensure it's behind other elements */}
+      <div className="absolute inset-0 backdrop-blur-sm z-0" /> {/* Ensures it's behind other elements */}
 
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
@@ -29,9 +29,9 @@ const HomePage = () => {
         </p>
       </motion.div>
 
-      {/* ✅ Fix: Added z-20 to prevent blur effect on button */}
+      {/* ✅ Login and Explore Button (Appears after delay) */}
       <motion.div
-        className="mt-12 z-20" // Added z-20
+        className="mt-12 z-20" // Added z-20 to prevent blur effect
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
@@ -47,7 +47,7 @@ const HomePage = () => {
         </Link>
       </motion.div>
 
-      {/* Powered by DevelMo (Reduced Logo Size & Cursive Font) */}
+      {/* ✅ Powered by DevelMo (With Smooth Light Glow Beneath Logo) */}
       <motion.div
         className="absolute bottom-10 flex flex-col items-center z-10"
         initial={{ opacity: 0 }}
@@ -57,10 +57,12 @@ const HomePage = () => {
         <p className="text-gray-500 text-lg italic tracking-wide font-serif">
           Powered by
         </p>
+        {/* 🌟 Glow effect using a pseudo-element (div behind logo) */}
+        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-48 h-48 md:w-56 md:h-56 bg-blue-500 opacity-20 blur-3xl rounded-full z-0" />
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"
-          className="h-40 w-40 md:h-56 md:w-56 opacity-100"
+          className="relative h-40 w-40 md:h-56 md:w-56 opacity-100 z-30"
         />
       </motion.div>
     </div>
