@@ -9,6 +9,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import LiveMonitoringPage from "./pages/LiveMonitoringPage";
 import RawDataLogsPage from "./pages/RawDataLogsPage";
+import LoginPage from "./pages/LoginPage";
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
 				<Route path="/raw-data-logs" element={<RawDataLogsPage />} /> 
 				<Route path='/users' element={<UsersPage />} />
 				<Route path='/settings' element={<SettingsPage />} />
+				<Route path='/login' element={<LoginPage />} />
 			</Routes>
 		</div>
 	);
