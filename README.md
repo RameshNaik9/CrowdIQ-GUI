@@ -9,7 +9,7 @@
 -   Recharts
 -   Framer Motion
 
-It is completely responsive and can be used for any type of web application.
+It is completely responsive and can be used to build admin panels, project management systems, CRMs, CMSs, and more.
 
 ### Run this app locally
 
