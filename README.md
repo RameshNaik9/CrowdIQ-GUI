@@ -1,4 +1,4 @@
-<h1 align="center">React Admin Dashboard</h1>
+<h1 align="center">React Computer Vision / YOLO Dashboard</h1>
 
 
 
