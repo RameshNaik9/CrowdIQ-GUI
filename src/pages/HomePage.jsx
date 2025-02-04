@@ -10,12 +10,18 @@ const HomePage = () => {
 
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
-        className="absolute top-36 flex flex-col items-center z-10 text-center" // Adjusted position
+        className="absolute top-36 flex flex-col items-center z-10 text-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <h1 className="text-6xl md:text-8xl font-extrabold text-white tracking-wide">
+        <h1
+          className="text-8xl md:text-10xl font-extrabold tracking-wide"
+          style={{
+            textShadow: "3px 3px 10px rgba(0, 0, 0, 0.8), 0px 0px 15px rgba(59, 130, 246, 0.6)",
+            transform: "perspective(500px) rotateX(0deg)",
+          }}
+        >
           C r o w d I Q
         </h1>
         <p className="text-gray-400 text-xs md:text-sm mt-2 tracking-wide ">
