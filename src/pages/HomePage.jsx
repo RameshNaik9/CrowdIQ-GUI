@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -9,7 +10,7 @@ const HomePage = () => {
 
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
-        className="absolute top-40 flex flex-col items-center z-10 text-center" // Positioned at the top
+        className="absolute top-36 flex flex-col items-center z-10 text-center" // Adjusted position
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
@@ -20,6 +21,17 @@ const HomePage = () => {
         <p className="text-gray-400 text-xs md:text-sm mt-2 tracking-wide ">
           See beyond the crowd
         </p>
+
+        {/* Login and Explore Button */}
+        <Link to="/overview">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-6 px-6 py-3 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
+          >
+            Login and Explore
+          </motion.button>
+        </Link>
       </motion.div>
 
       {/* Powered by DevelMo (Reduced Logo Size & Cursive Font) */}
