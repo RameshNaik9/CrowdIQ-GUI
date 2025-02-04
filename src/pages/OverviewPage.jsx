@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, UserCheck, Clock, BarChart2, Calendar, Camera } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "../components/common/Header";
@@ -15,8 +15,22 @@ const demoCameras = [
 ];
 
 const OverviewPage = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState("Today");
-  const [selectedCamera, setSelectedCamera] = useState(demoCameras[0].id);
+  // ✅ Load stored values from localStorage
+  const [selectedDateRange, setSelectedDateRange] = useState(() =>
+    localStorage.getItem("selectedDateRange") || "Today"
+  );
+  const [selectedCamera, setSelectedCamera] = useState(() =>
+    localStorage.getItem("selectedCamera") || demoCameras[0].id
+  );
+
+  // ✅ Save selections to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("selectedDateRange", selectedDateRange);
+  }, [selectedDateRange]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedCamera", selectedCamera);
+  }, [selectedCamera]);
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
