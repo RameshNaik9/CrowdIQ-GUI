@@ -11,7 +11,7 @@ const HomePage = () => {
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
         className="absolute top-32 flex flex-col items-center z-10 text-center"
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -90 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
