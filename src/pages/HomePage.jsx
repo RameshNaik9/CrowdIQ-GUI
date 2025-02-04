@@ -6,7 +6,7 @@ const HomePage = () => {
     <div className="relative w-full h-screen flex flex-col justify-center items-center bg-gray-900 text-white">
       {/* Background Gradient & Blur */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90" />
-      <div className="absolute inset-0 backdrop-blur-sm" />
+      <div className="absolute inset-0 backdrop-blur-sm z-0" /> {/* Set z-0 to ensure it's behind other elements */}
 
       {/* Branding: Name + Tagline (Positioned at the Top) */}
       <motion.div
@@ -25,15 +25,22 @@ const HomePage = () => {
           C r o w d I Q
         </h1>
         <p className="text-gray-400 text-sm md:text-base mt-2 tracking-wide">
-            S&nbsp;e&nbsp;e&nbsp;&nbsp;&nbsp;b&nbsp;e&nbsp;y&nbsp;o&nbsp;n&nbsp;d&nbsp;&nbsp;&nbsp;t&nbsp;h&nbsp;e&nbsp;&nbsp;&nbsp;c&nbsp;r&nbsp;o&nbsp;w&nbsp;d
+          S&nbsp;e&nbsp;e&nbsp;&nbsp;&nbsp;b&nbsp;e&nbsp;y&nbsp;o&nbsp;n&nbsp;d&nbsp;&nbsp;&nbsp;t&nbsp;h&nbsp;e&nbsp;&nbsp;&nbsp;c&nbsp;r&nbsp;o&nbsp;w&nbsp;d
         </p>
+      </motion.div>
 
-        {/* Login and Explore Button (Moved Down) */}
-        <Link to="/overview">
+      {/* ✅ Fix: Added z-20 to prevent blur effect on button */}
+      <motion.div
+        className="mt-12 z-20" // Added z-20
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
+      >
+        <Link to="/camera-configuration">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="mt-12 px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
+            className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
           >
             Login and Explore
           </motion.button>
@@ -45,7 +52,7 @@ const HomePage = () => {
         className="absolute bottom-10 flex flex-col items-center z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
+        transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
       >
         <p className="text-gray-500 text-lg italic tracking-wide font-serif">
           Powered by
