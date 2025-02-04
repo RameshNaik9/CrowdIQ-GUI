@@ -16,7 +16,7 @@ const HomePage = () => {
         transition={{ duration: 1 }}
       >
         <h1
-          className="text-9xl md:text-[10rem] font-extrabold tracking-wide"
+          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-extrabold tracking-wide whitespace-nowrap"
           style={{
             textShadow: "4px 4px 12px rgba(0, 0, 0, 0.9), 0px 0px 20px rgba(59, 130, 246, 0.8)",
             transform: "perspective(600px) rotateX(0deg)",
@@ -29,7 +29,7 @@ const HomePage = () => {
         </p>
       </motion.div>
 
-      {/* ✅ Login and Explore Button (Appears after delay) */}
+      {/* Login and Explore Button (Appears after delay) */}
       <motion.div
         className="mt-12 z-20" // Added z-20 to prevent blur effect
         initial={{ opacity: 0 }}
@@ -47,7 +47,7 @@ const HomePage = () => {
         </Link>
       </motion.div>
 
-      {/* ✅ Powered by DevelMo (With Smooth Light Glow Beneath Logo) */}
+      {/* Powered by DevelMo (With Smooth Light Glow Beneath Logo) */}
       <motion.div
         className="absolute bottom-10 flex flex-col items-center z-10"
         initial={{ opacity: 0 }}
