@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import GoogleLogin from "../components/auth/GoogleLogin"; // Import GoogleLogin component
 
-const LoginPage = () => {
+const LoginPage = ({ setUser }) => {
   return (
     <div className="relative w-full h-screen flex bg-gray-900 text-white">
       {/* Background Gradient & Blur */}
@@ -50,16 +50,8 @@ const LoginPage = () => {
           <h1 className="text-3xl font-bold text-gray-100">Welcome to CrowdIQ</h1>
           <p className="text-gray-400 text-sm mt-2">Sign in to continue</p>
 
-          {/* Google Sign-In Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="mt-6 w-full flex items-center justify-center gap-3 bg-white text-gray-900 px-4 py-3 rounded-lg shadow-md hover:bg-gray-200 transition font-semibold"
-            onClick={() => console.log("Google Sign-In Triggered")}
-          >
-            <FcGoogle size={24} />
-            Continue with Google
-          </motion.button>
+          {/* Google Sign-In Button (Now moved to a separate component) */}
+          <GoogleLogin setUser={setUser} />
 
           {/* Redirect Link to Home */}
           <p className="mt-4 text-sm text-gray-400">
