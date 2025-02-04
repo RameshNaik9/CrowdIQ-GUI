@@ -43,9 +43,6 @@ const LoginPage = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
       >
-        <p className="text-gray-500 text-lg italic tracking-wide font-serif">
-          Powered by
-        </p>
         <img
           src="/DM-01.png"
           alt="DevelMo Logo"

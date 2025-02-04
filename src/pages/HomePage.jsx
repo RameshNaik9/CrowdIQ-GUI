@@ -36,7 +36,7 @@ const HomePage = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
       >
-        <Link to="/camera-configuration">
+        <Link to="/login">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
