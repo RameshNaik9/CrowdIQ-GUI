@@ -24,8 +24,8 @@ const HomePage = () => {
         >
           C r o w d I Q
         </h1>
-        <p className="text-gray-400 text-sm md:text-base mt-2 tracking-wide ">
-          See beyond the crowd
+        <p className="text-gray-400 text-sm md:text-base mt-2 tracking-wide">
+            S&nbsp;e&nbsp;e&nbsp;&nbsp;&nbsp;b&nbsp;e&nbsp;y&nbsp;o&nbsp;n&nbsp;d&nbsp;&nbsp;&nbsp;t&nbsp;h&nbsp;e&nbsp;&nbsp;&nbsp;c&nbsp;r&nbsp;o&nbsp;w&nbsp;d
         </p>
 
         {/* Login and Explore Button (Moved Down) */}
