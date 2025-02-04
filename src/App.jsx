@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, BrowserRouter } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google"; // Google Auth Provider
 import Sidebar from "./components/common/Sidebar";
@@ -14,7 +14,7 @@ import LoginPage from "./pages/LoginPage";
 
 function App() {
 	const location = useLocation();
-	const [user, setUser] = useState(null);
+	const [, setUser] = useState(null);
 
 	// Load user from localStorage if exists
 	useEffect(() => {
