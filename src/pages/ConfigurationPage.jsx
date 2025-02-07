@@ -65,12 +65,18 @@ const ConfigurationPage = () => {
     try {
       setRefreshing(true);
       
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (!userData || !userData.id) {
+        throw new Error("User is not logged in.");
+      }
+
       const response = await fetch("http://localhost:8080/api/v1/cameras/trigger-health-check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
+        body: JSON.stringify({ userId: userData.id }), // ✅ Send userId in the request body
       });
 
       if (!response.ok) {
