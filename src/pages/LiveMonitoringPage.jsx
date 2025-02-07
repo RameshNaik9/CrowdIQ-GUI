@@ -4,10 +4,12 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"; // 🚀 W
 import Header from "../components/common/Header";
 import "@fontsource/orbitron";
 import { Switch } from "@headlessui/react"; // ✅ Web3-style toggle switch
+import RTSPPlayer from "../components/monitor/RTSPPlayer"; // ✅ Import RTSP Player Component
 
 const LiveMonitoringPage = () => {
   const [videoMode, setVideoMode] = useState("live"); // "live" or "processed"
   const [cameraData, setCameraData] = useState(null);
+  const [error, setError] = useState(null);
   const { cameraId } = useParams();
   const navigate = useNavigate();
 
@@ -30,7 +32,6 @@ const LiveMonitoringPage = () => {
       setCameraData(null);
     }
 
-    // Redirect to "/live-monitoring" if no camera is found
     if (!storedCamera && location.pathname !== "/live-monitoring") {
       navigate("/live-monitoring");
     }
@@ -86,17 +87,30 @@ const LiveMonitoringPage = () => {
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">
                   {videoMode === "live" ? "Live Camera Stream" : "Processed Video Stream"}
                 </h2>
-                <video
-                  src={videoMode === "live" ? cameraData?.stream_link || "/live-video.mp4" 
-                                            : cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
-                  autoPlay
-                  loop
-                  muted
-                  className="w-full h-96 rounded-lg shadow-lg"
-                />
+
+                {/* ✅ Live RTSP Streaming */}
+                {videoMode === "live" ? (
+                  <RTSPPlayer streamUrl={cameraData?.stream_link} setError={setError} />
+                ) : (
+                  <video
+                    src={cameraData?.processed_stream_link || "/default-processed.mp4"}
+                    autoPlay
+                    loop
+                    muted
+                    className="w-full h-96 rounded-lg shadow-lg"
+                  />
+                )}
+
+                {/* ⚠️ Show Error Message if Streaming Fails */}
+                {error && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white">
+                    <ExclamationTriangleIcon className="h-16 w-16 text-red-500 mb-4" />
+                    <p className="text-lg font-bold">{error}</p>
+                  </div>
+                )}
               </div>
 
-              {/* Right: Camera Details (Digital Font) */}
+              {/* Right: Camera Details */}
               <div className="bg-gray-800 p-4 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">Camera Details</h2>
                 <ul className="space-y-2 text-gray-300 font-orbitron text-lg tracking-wider">
@@ -107,12 +121,6 @@ const LiveMonitoringPage = () => {
                   <li><strong>Channel:</strong> {cameraData?.channel_number}</li>
                   <li><strong>Stream Type:</strong> {cameraData?.stream_type}</li>
                   <li><strong>Last Active:</strong> {cameraData?.last_active}</li>
-                  <li>
-                    <strong>Status:</strong>{" "}
-                    <span className={`font-bold ${cameraData?.status === "online" ? "text-green-400" : "text-red-400"}`}>
-                      {cameraData?.status}
-                    </span>
-                  </li>
                 </ul>
               </div>
             </div>
