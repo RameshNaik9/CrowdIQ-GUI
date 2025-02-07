@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/common/Header";
 import RTSPSetup from "../components/configuration/RTSPSetup";
-import CameraCard from "../components/configuration/CameraCard"; // Import CameraCard
+import CameraCard from "../components/configuration/CameraCard";
 
 const cameraTypes = [
   { id: "rtsp", name: "RTSP" },
@@ -10,42 +10,48 @@ const cameraTypes = [
   { id: "webrtc", name: "WebRTC" },
 ];
 
-// Sample Connection History Data
-const demoCameras = [
-  {
-    id: 1,
-    name: "Entrance Camera",
-    location: "Main Gate",
-    stream_link: "rtsp://example.com/stream1",
-    username: "admin",
-    password: "pass123",
-    ip_address: "192.168.1.10",
-    port: "554",
-    channel_number: "1",
-    stream_type: "main",
-    last_active: new Date().toLocaleString(),
-    status: "online",
-  },
-  {
-    id: 2,
-    name: "Lobby Camera",
-    location: "Building Lobby",
-    stream_link: "rtsp://example.com/stream2",
-    username: "user",
-    password: "pass456",
-    ip_address: "192.168.1.20",
-    port: "554",
-    channel_number: "2",
-    stream_type: "sub",
-    last_active: new Date().toLocaleString(),
-    status: "offline",
-  },
-];
-
 const ConfigurationPage = () => {
   const [selectedCamera, setSelectedCamera] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [expandedCard, setExpandedCard] = useState(null); // Track expanded card
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [cameras, setCameras] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCameras = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (!userData || !userData.id) {
+          throw new Error("User is not logged in.");
+        }
+
+        const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is sent
+            "user-id": userData.id, // ✅ Send userId in headers
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch cameras.");
+        }
+
+        const data = await response.json();
+        setCameras(data.data);
+        localStorage.setItem("cameras", JSON.stringify(data.data)); // ✅ Store in localStorage
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
 
   const handleCameraSelection = (cameraId) => {
     setSelectedCamera(cameraId);
@@ -100,20 +106,25 @@ const ConfigurationPage = () => {
 
         {/* Connection History */}
         <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {demoCameras.length > 0 ? (
-            demoCameras.map((camera) => (
+
+        {loading ? (
+          <p className="text-gray-400">Loading cameras...</p>
+        ) : error ? (
+          <p className="text-red-400">{error}</p>
+        ) : cameras.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cameras.map((camera) => (
               <CameraCard
-                key={camera.id}
+                key={camera._id}
                 camera={camera}
-                expanded={expandedCard === camera.id}
-                onToggleExpand={() => setExpandedCard(expandedCard === camera.id ? null : camera.id)}
+                expanded={expandedCard === camera._id}
+                onToggleExpand={() => setExpandedCard(expandedCard === camera._id ? null : camera._id)}
               />
-            ))
-          ) : (
-            <p className="text-gray-400">No previous connections found.</p>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400">No previous connections found.</p>
+        )}
       </main>
     </div>
   );
