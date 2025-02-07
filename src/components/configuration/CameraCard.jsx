@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Link2, Circle } from "lucide-react";
+import { X, Link2, Edit2, Circle } from "lucide-react"; // ✅ Web3 Icons for Close, Connect, Edit
 
-const CameraCard = ({ camera, expanded, onToggleExpand }) => {
+const CameraCard = ({ camera }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [expanded, setExpanded] = useState(false); // ✅ State to track expanded view
 
   // ✅ Handle Connecting an Existing Camera
   const handleConnect = async () => {
@@ -20,15 +21,7 @@ const CameraCard = ({ camera, expanded, onToggleExpand }) => {
 
       const payload = {
         userId: userData.id, // ✅ Pass user ID
-        cameraId: camera._id, // ✅ Pass camera ID (added to fix the error)
-        name: camera.name,
-        location: camera.location,
-        username: camera.username,
-        password: camera.password,
-        ip_address: camera.ip_address,
-        port: camera.port,
-        channel_number: camera.channel_number,
-        stream_type: camera.stream_type,
+        cameraId: camera._id, // ✅ Pass Camera ID
       };
 
       const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
@@ -63,59 +56,79 @@ const CameraCard = ({ camera, expanded, onToggleExpand }) => {
   };
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-md transition-all">
-      {/* Camera Basic Info */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
-          <p className="text-gray-400 text-sm">{camera.location}</p>
-          <p className="text-gray-500 text-xs">Last Active: {camera.last_active}</p>
-        </div>
-        {/* Status Icon */}
-        <div className="flex items-center">
+    <>
+      {/* Standard Camera Card */}
+      <div
+        className="bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer"
+        onClick={() => setExpanded(true)} // ✅ Clicking card expands view
+      >
+        {/* Camera Basic Info */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
+            <p className="text-gray-400 text-sm">{camera.location}</p>
+            <p className="text-gray-500 text-xs">Last Active: {camera.last_active}</p>
+          </div>
+          {/* Status Icon */}
+          <div className="flex items-center">
           <Circle size={10} className={`mr-2 ${camera.status === "online" ? "text-green-400" : "text-red-400"}`} />
-          <span className="text-sm text-gray-300">{camera.status}</span>
+            <span className="text-sm text-gray-300">{camera.status}</span>
+          </div>
         </div>
-      </div>
 
-      {/* View More + Connect Buttons */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={onToggleExpand}
-          className="text-blue-400 hover:text-blue-500 flex items-center text-sm transition"
-        >
-          {expanded ? "Hide Details" : "View Details"}
-          {expanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-        </button>
-
-        <button
-          onClick={handleConnect}
-          disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
-        >
-          <Link2 size={16} className="mr-2" />
-          {loading ? "Connecting..." : "Connect"}
+        {/* View Details Button */}
+        <button className="text-blue-400 hover:text-blue-500 flex items-center text-sm mt-4 transition">
+          View Details →
         </button>
       </div>
 
-      {/* Expanded Camera Details (Only Expands When Needed) */}
+      {/* ✅ Expanded View Modal */}
       {expanded && (
-        <div className="mt-4 text-gray-300 text-sm space-y-2">
-          <p><strong>IP Address:</strong> {camera.ip_address}</p>
-          <p><strong>Port:</strong> {camera.port}</p>
-          <p><strong>Channel:</strong> {camera.channel_number}</p>
-          <p><strong>Stream Type:</strong> {camera.stream_type}</p>
-          <p><strong>Username:</strong> {camera.username}</p>
-          <p><strong>Password:</strong> {camera.password}</p>
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-lg w-full transform scale-95 animate-scale-up">
+            {/* Close Button */}
+            <button
+              onClick={() => setExpanded(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Camera Details */}
+            <h2 className="text-2xl font-semibold text-gray-100 mb-4">{camera.name}</h2>
+            <p className="text-gray-400 mb-1"><strong>Location:</strong> {camera.location}</p>
+            <p className="text-gray-400 mb-1"><strong>IP Address:</strong> {camera.ip_address}</p>
+            <p className="text-gray-400 mb-1"><strong>Port:</strong> {camera.port}</p>
+            <p className="text-gray-400 mb-1"><strong>Channel:</strong> {camera.channel_number}</p>
+            <p className="text-gray-400 mb-1"><strong>Stream Type:</strong> {camera.stream_type}</p>
+            <p className="text-gray-400 mb-4"><strong>Last Active:</strong> {camera.last_active}</p>
+
+            {/* Buttons */}
+            <div className="flex justify-between">
+              <button
+                onClick={handleConnect}
+                disabled={loading}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition"
+              >
+                <Link2 size={16} className="mr-2" />
+                {loading ? "Connecting..." : "Connect"}
+              </button>
+
+              <button
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center transition"
+              >
+                <Edit2 size={16} className="mr-2" />
+                Edit
+              </button>
+            </div>
+
+            {/* Success & Error Messages */}
+            {success && <p className="text-green-400 text-sm mt-3">{success}</p>}
+            {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
+          </div>
         </div>
       )}
-
-      {/* ✅ Success Message (Shows before redirecting) */}
-      {success && <p className="text-green-400 text-sm mt-3">{success}</p>}
-
-      {/* ❌ Error Message */}
-      {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
-    </div>
+    </>
   );
 };
 
