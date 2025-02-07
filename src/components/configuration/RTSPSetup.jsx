@@ -23,59 +23,63 @@ const RTSPSetup = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-        // ✅ Retrieve user ID from localStorage
-        const userData = JSON.parse(localStorage.getItem("user"));
-        if (!userData || !userData.id) {
-            throw new Error("User is not logged in. Please log in first.");
-        }
+      // ✅ Retrieve user ID from localStorage
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (!userData || !userData.id) {
+        throw new Error("User is not logged in. Please log in first.");
+      }
 
-        const payload = {
-            userId: userData.id, // ✅ Include user ID in request
-            name: formData.name,
-            location: formData.location,
-            username: formData.username,
-            password: formData.password,
-            ip_address: formData.ip,
-            port: formData.port,
-            channel_number: formData.channel,
-            stream_type: formData.stream,
-        };
+      const payload = {
+        userId: userData.id, // ✅ Include user ID in request
+        name: formData.name,
+        location: formData.location,
+        username: formData.username,
+        password: formData.password,
+        ip_address: formData.ip,
+        port: formData.port,
+        channel_number: formData.channel,
+        stream_type: formData.stream,
+      };
 
-        const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ Add token for authentication (optional)
-            },
-            body: JSON.stringify(payload),
-        });
+      const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ Add token for authentication (optional)
+        },
+        body: JSON.stringify(payload),
+      });
 
-        if (!response.ok) {
-            const { detail } = await response.json();
-            throw new Error(detail || "Failed to connect to the camera");
-        }
+      if (!response.ok) {
+        const { detail } = await response.json();
+        throw new Error(detail || "Failed to connect to the camera");
+      }
 
-        const data = await response.json();
-        localStorage.setItem("cameraData", JSON.stringify(data.data));
+      const data = await response.json();
+      
+      // ✅ Store active camera details in localStorage
+      localStorage.setItem("activeCamera", JSON.stringify(data.data));
 
-        // ✅ Success alert
-        setSuccess("Camera connected successfully!");
-        setTimeout(() => {
-            navigate(`/live-monitoring`);
-        }, 2000); // Redirect after 2 seconds
+      // ✅ Success alert
+      setSuccess("Camera connected successfully!");
+      
+      setTimeout(() => {
+        // ✅ Redirect to `/live-monitoring/:cameraId`
+        navigate(`/live-monitoring/${data.data._id}`);
+      }, 2000); // Redirect after 2 seconds
     } catch (err) {
-        setError(err.message);
+      setError(err.message);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-gray-900 shadow-lg rounded-lg">

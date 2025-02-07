@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google"; // Google Auth Provider
 import Sidebar from "./components/common/Sidebar";
@@ -14,15 +14,28 @@ import LoginPage from "./pages/LoginPage";
 
 function App() {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const [, setUser] = useState(null);
+	const [activeCamera, setActiveCamera] = useState(null);
 
-	// Load user from localStorage if exists
+	// Load user & active camera from localStorage
 	useEffect(() => {
 		const storedUser = localStorage.getItem("user");
-		if (storedUser) {
-			setUser(JSON.parse(storedUser));
+		const storedCamera = localStorage.getItem("activeCamera");
+
+		if (storedUser) setUser(JSON.parse(storedUser));
+		if (storedCamera) {
+			const cameraData = JSON.parse(storedCamera);
+			setActiveCamera(cameraData._id);
 		}
 	}, []);
+
+	// Redirect `/live-monitoring` to `/live-monitoring/:cameraId` if a camera is active
+	useEffect(() => {
+		if (location.pathname === "/live-monitoring" && activeCamera) {
+			navigate(`/live-monitoring/${activeCamera}`);
+		}
+	}, [location.pathname, activeCamera, navigate]);
 
 	return (
 		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -39,7 +52,7 @@ function App() {
 				<Routes>
 					<Route path='/' element={<HomePage />} />
 					<Route path='/camera-configuration' element={<ConfigurationPage />} />
-					<Route path='/live-monitoring' element={<LiveMonitoringPage />} />
+					<Route path='/live-monitoring/:cameraId' element={<LiveMonitoringPage />} />
 					<Route path='/analytics' element={<AnalyticsPage />} />
 					<Route path='/overview' element={<OverviewPage />} />
 					<Route path="/raw-data-logs" element={<RawDataLogsPage />} /> 
