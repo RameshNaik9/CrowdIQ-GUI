@@ -58,10 +58,7 @@ const CameraCard = ({ camera }) => {
   return (
     <>
       {/* Standard Camera Card */}
-      <div
-        className="bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer"
-        onClick={() => setExpanded(true)} // ✅ Clicking card expands view
-      >
+      <div className="bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer">
         {/* Camera Basic Info */}
         <div className="flex items-center justify-between">
           <div>
@@ -71,15 +68,34 @@ const CameraCard = ({ camera }) => {
           </div>
           {/* Status Icon */}
           <div className="flex items-center">
-          <Circle size={10} className={`mr-2 ${camera.status === "online" ? "text-green-400" : "text-red-400"}`} />
+            <Circle size={10} className={`mr-2 ${camera.status === "online" ? "text-green-400" : "text-red-400"}`} />
             <span className="text-sm text-gray-300">{camera.status}</span>
           </div>
         </div>
 
-        {/* View Details Button */}
-        <button className="text-blue-400 hover:text-blue-500 flex items-center text-sm mt-4 transition">
-          View Details →
-        </button>
+        {/* Buttons (View Details & Connect) */}
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setExpanded(true)}
+            className="text-blue-400 hover:text-blue-500 flex items-center text-sm transition"
+          >
+            View Details →
+          </button>
+
+          {/* ✅ "Connect" Button (on Card itself) */}
+          <button
+            onClick={handleConnect}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
+          >
+            <Link2 size={16} className="mr-2" />
+            {loading ? "Connecting..." : "Connect"}
+          </button>
+        </div>
+
+        {/* ✅ Show Messages Below Card */}
+        {success && <p className="text-green-400 text-sm mt-2">{success}</p>}
+        {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
       </div>
 
       {/* ✅ Expanded View Modal */}
@@ -103,8 +119,9 @@ const CameraCard = ({ camera }) => {
             <p className="text-gray-400 mb-1"><strong>Stream Type:</strong> {camera.stream_type}</p>
             <p className="text-gray-400 mb-4"><strong>Last Active:</strong> {camera.last_active}</p>
 
-            {/* Buttons */}
+            {/* Buttons in Expanded View */}
             <div className="flex justify-between">
+              {/* ✅ "Connect" Button in Expanded View */}
               <button
                 onClick={handleConnect}
                 disabled={loading}
@@ -114,6 +131,7 @@ const CameraCard = ({ camera }) => {
                 {loading ? "Connecting..." : "Connect"}
               </button>
 
+              {/* ✅ "Edit" Button */}
               <button
                 className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center transition"
               >
@@ -122,7 +140,7 @@ const CameraCard = ({ camera }) => {
               </button>
             </div>
 
-            {/* Success & Error Messages */}
+            {/* ✅ Show Messages Below Buttons */}
             {success && <p className="text-green-400 text-sm mt-3">{success}</p>}
             {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
           </div>
