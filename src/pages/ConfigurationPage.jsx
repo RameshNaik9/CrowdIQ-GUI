@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { RotateCcw } from "lucide-react"; // ✅ Web3-style Refresh Icon
 import Header from "../components/common/Header";
 import RTSPSetup from "../components/configuration/RTSPSetup";
 import CameraCard from "../components/configuration/CameraCard";
@@ -16,49 +17,76 @@ const ConfigurationPage = () => {
   const [expandedCard, setExpandedCard] = useState(null);
   const [cameras, setCameras] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // ✅ Refreshing State
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCameras = async () => {
-      try {
-        const userData = JSON.parse(localStorage.getItem("user"));
-        if (!userData || !userData.id) {
-          throw new Error("User is not logged in.");
-        }
-
-        const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is sent
-            "user-id": userData.id, // ✅ Send userId in headers
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch cameras.");
-        }
-
-        const data = await response.json();
-
-        // ✅ Sort cameras by `createdAt` (latest first)
-        const sortedCameras = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        setCameras(sortedCameras);
-        localStorage.setItem("cameras", JSON.stringify(sortedCameras)); // ✅ Store in localStorage
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  // ✅ Fetch Cameras
+  const fetchCameras = async () => {
+    try {
+      setLoading(true);
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (!userData || !userData.id) {
+        throw new Error("User is not logged in.");
       }
-    };
 
+      const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "user-id": userData.id, // ✅ Send userId in headers
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch cameras.");
+      }
+
+      const data = await response.json();
+
+      // ✅ Sort cameras by `createdAt` (latest first)
+      const sortedCameras = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      setCameras(sortedCameras);
+      localStorage.setItem("cameras", JSON.stringify(sortedCameras)); // ✅ Store in localStorage
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCameras();
   }, []);
 
-  const handleCameraSelection = (cameraId) => {
-    setSelectedCamera(cameraId);
-    setShowDropdown(false);
+  // ✅ Handle Refresh Button Click
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true);
+      
+      const response = await fetch("http://localhost:8080/api/v1/cameras/trigger-health-check", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to trigger health check.");
+      }
+
+      // ✅ Wait for 2 seconds to ensure health check is performed
+      setTimeout(() => {
+        fetchCameras();
+        setRefreshing(false);
+      }, 2000);
+
+    } catch (err) {
+      setError(err.message);
+      setRefreshing(false);
+    }
   };
 
   return (
@@ -85,7 +113,7 @@ const ConfigurationPage = () => {
             {cameraTypes.map((camera) => (
               <button
                 key={camera.id}
-                onClick={() => handleCameraSelection(camera.id)}
+                onClick={() => setSelectedCamera(camera.id)}
                 className={`block w-full text-left px-4 py-2 text-white hover:bg-gray-700 transition ${
                   camera.id !== "rtsp" ? "opacity-50 cursor-not-allowed" : ""
                 }`}
@@ -107,8 +135,17 @@ const ConfigurationPage = () => {
         {/* Divider */}
         <hr className="my-6 border-gray-700" />
 
-        {/* Connection History */}
-        <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
+        {/* Connection History with Refresh Button */}
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
+          <button
+            onClick={handleRefresh}
+            className="bg-gray-700 hover:bg-gray-800 text-white p-2 rounded-full transition"
+            disabled={refreshing}
+          >
+            <RotateCcw size={20} className={`transition-transform ${refreshing ? "animate-spin" : ""}`} />
+          </button>
+        </div>
 
         {loading ? (
           <p className="text-gray-400">Loading cameras...</p>
