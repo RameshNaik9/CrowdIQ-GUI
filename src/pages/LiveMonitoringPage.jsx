@@ -102,8 +102,8 @@ const LiveMonitoringPage = () => {
                     />
                   )}
 
-                  {/* Error overlay: covers only the video container */}
-                  {error && (
+                  {/* Error overlay shows only for the live video */}
+                  {videoMode === "live" && error && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white z-10">
                       <ExclamationTriangleIcon className="h-16 w-16 text-red-500 mb-4" />
                       <p className="text-lg font-bold">{error}</p>
