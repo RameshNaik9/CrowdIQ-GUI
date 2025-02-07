@@ -14,6 +14,7 @@ const RTSPSetup = () => {
   });
 
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ const RTSPSetup = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
       const payload = {
@@ -39,7 +41,7 @@ const RTSPSetup = () => {
         stream_type: formData.stream,
       };
 
-      const response = await fetch("http://localhost:8080/api/cameras/connect", {
+      const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -52,7 +54,12 @@ const RTSPSetup = () => {
 
       const data = await response.json();
       localStorage.setItem("cameraData", JSON.stringify(data.data));
-      navigate(`/stream/${data.data._id}`);
+
+      // ✅ Success alert
+      setSuccess("Camera connected successfully!");
+      setTimeout(() => {
+        navigate(`/stream/${data.data._id}`);
+      }, 2000); // Redirect after 2 seconds
     } catch (err) {
       setError(err.message);
     } finally {
@@ -63,12 +70,17 @@ const RTSPSetup = () => {
   return (
     <div className="max-w-lg mx-auto p-6 bg-gray-900 shadow-lg rounded-lg">
       {/* Back Button */}
-      <a href="/camera-configuration" className="text-blue-400 hover:underline text-sm mb-4 block">← Back</a>
-      
+      <a href="/camera-configuration" className="text-blue-400 hover:underline text-sm mb-4 block">
+        ← Back
+      </a>
+
       {/* Title */}
       <h2 className="text-2xl font-semibold text-gray-100 mb-4">Enter RTSP Stream Details</h2>
 
-      {/* Error Message */}
+      {/* ✅ Success Alert */}
+      {success && <p className="text-green-400 text-sm mb-3">{success}</p>}
+
+      {/* ❌ Error Alert */}
       {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
 
       {/* Form */}
@@ -99,7 +111,7 @@ const RTSPSetup = () => {
         ))}
 
         {/* Submit Button */}
-        <button 
+        <button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
           disabled={loading}
