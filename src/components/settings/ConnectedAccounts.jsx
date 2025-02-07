@@ -10,18 +10,18 @@ const ConnectedAccounts = () => {
 			connected: true,
 			icon: "/google.png",
 		},
-		{
-			id: 2,
-			name: "Facebook",
-			connected: false,
-			icon: "/facebook.svg",
-		},
-		{
-			id: 3,
-			name: "Twitter",
-			connected: true,
-			icon: "/x.png",
-		},
+		// {
+		// 	id: 2,
+		// 	name: "Facebook",
+		// 	connected: false,
+		// 	icon: "/facebook.svg",
+		// },
+		// {
+		// 	id: 3,
+		// 	name: "Twitter",
+		// 	connected: true,
+		// 	icon: "/x.png",
+		// },
 	]);
 	return (
 		<SettingSection icon={HelpCircle} title={"Connected Accounts"}>
