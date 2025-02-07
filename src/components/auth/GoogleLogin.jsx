@@ -12,11 +12,20 @@ const GoogleLogin = ({ setUser }) => {
                 const result = await googleAuth(authResult.code);
                 console.log("Login Successful:", result.data);
 
-                // Store user details & token
-                setUser(result.data.data.user);
-                localStorage.setItem("token", result.data.token);
-                localStorage.setItem("user", JSON.stringify(result.data.data.user));
+                const userData = result.data.data.user;
+                const token = result.data.token;
 
+                // Store user details & token in local storage
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(userData));
+
+                // Set user state in React (if applicable)
+                if (setUser) {
+                    setUser(userData);
+                }
+
+                alert(`Welcome, ${userData.name}!`);
+                
                 // Redirect to Camera Configuration Page
                 window.location.href = "/camera-configuration";
             } else {
