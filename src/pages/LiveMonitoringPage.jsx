@@ -93,7 +93,7 @@ const LiveMonitoringPage = () => {
                   <RTSPPlayer streamUrl={cameraData?.stream_link} setError={setError} />
                 ) : (
                   <video
-                    src={cameraData?.processed_stream_link || "/default-processed.mp4"}
+                    src={cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
                     autoPlay
                     loop
                     muted
