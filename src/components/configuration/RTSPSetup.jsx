@@ -73,7 +73,7 @@ const RTSPSetup = () => {
       setTimeout(() => {
         // ✅ Redirect to `/live-monitoring/:cameraId`
         navigate(`/live-monitoring/${data.data._id}`);
-      }, 2000); // Redirect after 2 seconds
+      }, 500); // Redirect after 2 seconds
     } catch (err) {
       setError(err.message);
     } finally {

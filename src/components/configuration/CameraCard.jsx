@@ -45,13 +45,15 @@ const CameraCard = ({ camera, expanded, onToggleExpand }) => {
 
       const data = await response.json();
       localStorage.setItem("activeCamera", JSON.stringify(data.data)); // ✅ Save as Active Camera
+
+      // ✅ Show success message first
       setSuccess("Camera connected successfully!");
 
-      // ✅ Redirect to live monitoring page after connection
+      // ✅ Redirect after 2 seconds
       setTimeout(() => {
         window.location.href = `/live-monitoring/${data.data._id}`;
-      }, 2000);
-      
+      }, 500);
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,7 +109,7 @@ const CameraCard = ({ camera, expanded, onToggleExpand }) => {
         </div>
       )}
 
-      {/* ✅ Success Message */}
+      {/* ✅ Success Message (Shows before redirecting) */}
       {success && <p className="text-green-400 text-sm mt-3">{success}</p>}
 
       {/* ❌ Error Message */}
