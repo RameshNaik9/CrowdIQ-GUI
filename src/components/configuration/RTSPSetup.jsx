@@ -68,6 +68,7 @@ const handleSubmit = async (e) => {
         // ✅ Success alert
         setSuccess("Camera connected successfully!");
         setTimeout(() => {
+            navigate(`/live-monitoring`);
         }, 2000); // Redirect after 2 seconds
     } catch (err) {
         setError(err.message);
