@@ -136,8 +136,8 @@ const ConfigurationPage = () => {
         <hr className="my-6 border-gray-700" />
 
         {/* Connection History with Refresh Button */}
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-gray-100 mb-4">Connection History</h3>
+        <div className="flex items-center space-x-4 mb-6">
+          <h3 className="text-xl font-semibold text-gray-100">Connection History</h3>
           <button
             onClick={handleRefresh}
             className="bg-gray-700 hover:bg-gray-800 text-white p-2 rounded-full transition"
