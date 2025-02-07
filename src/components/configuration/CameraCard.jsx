@@ -20,6 +20,7 @@ const CameraCard = ({ camera, expanded, onToggleExpand }) => {
 
       const payload = {
         userId: userData.id, // ✅ Pass user ID
+        cameraId: camera._id, // ✅ Pass camera ID (added to fix the error)
         name: camera.name,
         location: camera.location,
         username: camera.username,
