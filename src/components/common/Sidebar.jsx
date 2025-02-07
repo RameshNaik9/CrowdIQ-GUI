@@ -6,11 +6,13 @@ import { Link, useLocation } from "react-router-dom";
 const SIDEBAR_ITEMS = [
   { name: "Camera Setup", icon: Video, color: "#EAB308", href: "/camera-configuration" },
   // { name: "Live Monitoring", icon: MonitorPlay, color: "#F97316", href: "/live-monitoring" },
-    {
+  {
     name: "Live Monitoring",
     icon: MonitorPlay,
     color: "#F97316",
-    href: `/live-monitoring/${localStorage.getItem("activeCamera") ? JSON.parse(localStorage.getItem("activeCamera"))._id : ""}`,
+    href: localStorage.getItem("activeCamera") 
+      ? `/live-monitoring/${JSON.parse(localStorage.getItem("activeCamera"))._id}` 
+      : "/live-monitoring",
   },
   { name: "Overview", icon: BarChart2, color: "#6366f1", href: "/overview" },
   { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },

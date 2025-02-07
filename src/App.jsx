@@ -52,6 +52,7 @@ function App() {
 				<Routes>
 					<Route path='/' element={<HomePage />} />
 					<Route path='/camera-configuration' element={<ConfigurationPage />} />
+					<Route path='/live-monitoring' element={<LiveMonitoringPage />} />
 					<Route path='/live-monitoring/:cameraId' element={<LiveMonitoringPage />} />
 					<Route path='/analytics' element={<AnalyticsPage />} />
 					<Route path='/overview' element={<OverviewPage />} />
