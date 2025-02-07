@@ -1,4 +1,4 @@
-import { BarChart2, Menu, MonitorPlay, Settings, TrendingUp, Users, Video, FileText } from "lucide-react";
+import { BarChart2, Menu, MonitorPlay, Settings, TrendingUp, Video, FileText } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -9,7 +9,7 @@ const SIDEBAR_ITEMS = [
   { name: "Overview", icon: BarChart2, color: "#6366f1", href: "/overview" },
   { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
   { name: "Data Logs", icon: FileText, color: "#4ADE80", href: "/raw-data-logs" },
-  { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
+  // { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
   { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
 
