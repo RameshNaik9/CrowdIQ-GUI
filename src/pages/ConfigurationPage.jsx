@@ -40,8 +40,12 @@ const ConfigurationPage = () => {
         }
 
         const data = await response.json();
-        setCameras(data.data);
-        localStorage.setItem("cameras", JSON.stringify(data.data)); // ✅ Store in localStorage
+
+        // ✅ Sort cameras by `createdAt` (latest first)
+        const sortedCameras = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        setCameras(sortedCameras);
+        localStorage.setItem("cameras", JSON.stringify(sortedCameras)); // ✅ Store in localStorage
       } catch (err) {
         setError(err.message);
       } finally {
@@ -51,7 +55,6 @@ const ConfigurationPage = () => {
 
     fetchCameras();
   }, []);
-
 
   const handleCameraSelection = (cameraId) => {
     setSelectedCamera(cameraId);
