@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { X, Link2, Edit2, Circle } from "lucide-react"; // ✅ Web3 Icons for Close, Connect, Edit
+import { useState, useEffect } from "react";
+import { X, Link2, Edit2, Circle, Power } from "lucide-react"; // ✅ Web3 Icons for Close, Connect, Edit, Disconnect
 
 const CameraCard = ({ camera }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [expanded, setExpanded] = useState(false); // ✅ State to track expanded view
+  const [isActive, setIsActive] = useState(false); // ✅ Track if the camera is active
+
+  // ✅ Check if this camera is already active
+  useEffect(() => {
+    const activeCamera = JSON.parse(localStorage.getItem("activeCamera"));
+    if (activeCamera && activeCamera._id === camera._id) {
+      setIsActive(true);
+    }
+  }, [camera._id]);
 
   // ✅ Handle Connecting an Existing Camera
   const handleConnect = async () => {
@@ -40,8 +49,9 @@ const CameraCard = ({ camera }) => {
       const data = await response.json();
       localStorage.setItem("activeCamera", JSON.stringify(data.data)); // ✅ Save as Active Camera
 
-      // ✅ Show success message first
+      // ✅ Show success message and set camera as active
       setSuccess("Camera connected successfully!");
+      setIsActive(true);
 
       // ✅ Redirect after 2 seconds
       setTimeout(() => {
@@ -55,10 +65,21 @@ const CameraCard = ({ camera }) => {
     }
   };
 
+  // ✅ Handle Disconnecting the Camera
+  const handleDisconnect = () => {
+    localStorage.removeItem("activeCamera"); // ✅ Remove from localStorage
+    setIsActive(false);
+    setSuccess("Camera disconnected successfully!");
+  };
+
   return (
     <>
       {/* Standard Camera Card */}
-      <div className="bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer">
+      <div 
+        className={`bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer relative ${
+          isActive ? "border-b-4 border-green-400 rounded-b-md" : "" // ✅ Active camera styling
+        }`}
+      >
         {/* Camera Basic Info */}
         <div className="flex items-center justify-between">
           <div>
@@ -73,7 +94,14 @@ const CameraCard = ({ camera }) => {
           </div>
         </div>
 
-        {/* Buttons (View Details & Connect) */}
+        {/* Active Status Badge */}
+        {isActive && (
+          <span className="absolute bottom-0 left-0 right-0 text-center text-green-300 text-xs py-1 rounded-b-md">
+            Active
+          </span>
+        )}
+
+        {/* Buttons (View Details & Connect/Disconnect) */}
         <div className="flex justify-between mt-4">
           <button
             onClick={() => setExpanded(true)}
@@ -82,15 +110,25 @@ const CameraCard = ({ camera }) => {
             View Details →
           </button>
 
-          {/* ✅ "Connect" Button (on Card itself) */}
-          <button
-            onClick={handleConnect}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
-          >
-            <Link2 size={16} className="mr-2" />
-            {loading ? "Connecting..." : "Connect"}
-          </button>
+          {/* ✅ "Connect" or "Disconnect" Button */}
+          {isActive ? (
+            <button
+              onClick={handleDisconnect}
+              className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
+            >
+              <Power size={16} className="mr-2" />
+              Disconnect
+            </button>
+          ) : (
+            <button
+              onClick={handleConnect}
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
+            >
+              <Link2 size={16} className="mr-2" />
+              {loading ? "Connecting..." : "Connect"}
+            </button>
+          )}
         </div>
 
         {/* ✅ Show Messages Below Card */}
@@ -121,15 +159,25 @@ const CameraCard = ({ camera }) => {
 
             {/* Buttons in Expanded View */}
             <div className="flex justify-between">
-              {/* ✅ "Connect" Button in Expanded View */}
-              <button
-                onClick={handleConnect}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition"
-              >
-                <Link2 size={16} className="mr-2" />
-                {loading ? "Connecting..." : "Connect"}
-              </button>
+              {/* ✅ "Connect" or "Disconnect" Button */}
+              {isActive ? (
+                <button
+                  onClick={handleDisconnect}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center transition"
+                >
+                  <Power size={16} className="mr-2" />
+                  Disconnect
+                </button>
+              ) : (
+                <button
+                  onClick={handleConnect}
+                  disabled={loading}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition"
+                >
+                  <Link2 size={16} className="mr-2" />
+                  {loading ? "Connecting..." : "Connect"}
+                </button>
+              )}
 
               {/* ✅ "Edit" Button */}
               <button
