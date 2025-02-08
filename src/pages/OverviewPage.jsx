@@ -220,7 +220,7 @@ const OverviewPage = () => {
           <StatCard name="Total Visitors" icon={Users} value={analytics?.totalVisitors || "0"} color="#6366F1" />
           <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.maleVisitors || "0"} color="#8B5CF6" />
           <StatCard name="Avg. Dwell Time" icon={Clock} value={analytics?.avgDwellTime || "0m"} color="#EC4899" />
-          <StatCard name="Avg. Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
+          <StatCard name="Average Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
