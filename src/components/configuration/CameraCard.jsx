@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { X, Link2, Edit2, Circle, Power } from "lucide-react"; // ✅ Web3 Icons for Close, Connect, Edit, Disconnect
 
-const CameraCard = ({ camera }) => {
+const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [expanded, setExpanded] = useState(false); // ✅ State to track expanded view
+  const [expandedState, setExpanded] = useState(expanded || false); // ✅ State to track expanded view
   const [isActive, setIsActive] = useState(false); // ✅ Track if the camera is active
 
   // ✅ Check if this camera is already active
@@ -77,14 +77,20 @@ const CameraCard = ({ camera }) => {
       {/* Standard Camera Card */}
       <div 
         className={`bg-gray-800 p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer relative ${
-          isActive ? "border-b-4 border-green-400 rounded-b-md" : "" // ✅ Active camera styling
-        }`}
+          isActive ? "border-b-4 border-green-400 rounded-b-md" : ""
+        } ${healthCheckActive ? "filter blur-md pointer-events-none" : ""}`}
       >
+        {healthCheckActive && (
+          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+            Checking or running cameras health status which are connected in 2 days before
+          </div>
+        )}
+
         {/* Camera Basic Info */}
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
-            <p className="text-gray-400 text-sm truncate w-48">{camera.location}</p> {/* ✅ Truncate long addresses */}
+            <p className="text-gray-400 text-sm truncate w-48">{camera.location}</p>
             <p className="text-gray-500 text-xs">Last Active: {camera.last_active}</p>
           </div>
           {/* Status Icon */}
@@ -104,7 +110,7 @@ const CameraCard = ({ camera }) => {
         {/* Buttons (View Details & Connect/Disconnect) */}
         <div className="flex justify-between mt-4">
           <button
-            onClick={() => setExpanded(true)}
+            onClick={onToggleExpand}
             className="text-blue-400 hover:text-blue-500 flex items-center text-sm transition"
           >
             View Details →
@@ -142,11 +148,11 @@ const CameraCard = ({ camera }) => {
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-lg w-full transform scale-95 animate-scale-up">
             {/* Close Button */}
             <button
-              onClick={() => setExpanded(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
-            >
-              <X size={24} />
-            </button>
+  onClick={onToggleExpand}
+  className="absolute top-4 right-4 text-gray-400 hover:text-white"
+>
+  <X size={24} />
+</button>
 
             {/* Camera Details */}
             <h2 className="text-2xl font-semibold text-gray-100 mb-4">{camera.name}</h2>

@@ -45,7 +45,9 @@ const ConfigurationPage = () => {
       const data = await response.json();
 
       // ✅ Sort cameras by `createdAt` (latest first)
-      const sortedCameras = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortedCameras = data.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
 
       setCameras(sortedCameras);
       localStorage.setItem("cameras", JSON.stringify(sortedCameras)); // ✅ Store in localStorage
@@ -70,14 +72,17 @@ const ConfigurationPage = () => {
         throw new Error("User is not logged in.");
       }
 
-      const response = await fetch("http://localhost:8080/api/v1/cameras/trigger-health-check", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ userId: userData.id }), // ✅ Send userId in the request body
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/v1/cameras/trigger-health-check",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ userId: userData.id }), // ✅ Send userId in the request body
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to trigger health check.");
@@ -164,7 +169,12 @@ const ConfigurationPage = () => {
                 key={camera._id}
                 camera={camera}
                 expanded={expandedCard === camera._id}
-                onToggleExpand={() => setExpandedCard(expandedCard === camera._id ? null : camera._id)}
+                onToggleExpand={() =>
+                  setExpandedCard(
+                    expandedCard === camera._id ? null : camera._id
+                  )
+                }
+                healthCheckActive={refreshing} // <-- Pass the refreshing state here
               />
             ))}
           </div>
