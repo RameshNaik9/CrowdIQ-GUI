@@ -84,7 +84,7 @@ const CameraCard = ({ camera }) => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
-            <p className="text-gray-400 text-sm">{camera.location}</p>
+            <p className="text-gray-400 text-sm truncate w-48">{camera.location}</p> {/* ✅ Truncate long addresses */}
             <p className="text-gray-500 text-xs">Last Active: {camera.last_active}</p>
           </div>
           {/* Status Icon */}
@@ -114,16 +114,16 @@ const CameraCard = ({ camera }) => {
           {isActive ? (
             <button
               onClick={handleDisconnect}
-              className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
+              className="bg-red-600 hover:bg-red-700 text-white text-sm px-2.5 py-1 rounded-lg flex items-center transition"
             >
-              <Power size={16} className="mr-2" />
+              <Power size={16} className="mr-1" />
               Disconnect
             </button>
           ) : (
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg flex items-center transition"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-2.5 py-1 rounded-lg flex items-center transition"
             >
               <Link2 size={16} className="mr-2" />
               {loading ? "Connecting..." : "Connect"}
@@ -150,7 +150,7 @@ const CameraCard = ({ camera }) => {
 
             {/* Camera Details */}
             <h2 className="text-2xl font-semibold text-gray-100 mb-4">{camera.name}</h2>
-            <p className="text-gray-400 mb-1"><strong>Location:</strong> {camera.location}</p>
+            <p className="text-gray-400 mb-1"><strong>Location:</strong> {camera.location}</p> {/* ✅ Full address in modal */}
             <p className="text-gray-400 mb-1"><strong>IP Address:</strong> {camera.ip_address}</p>
             <p className="text-gray-400 mb-1"><strong>Port:</strong> {camera.port}</p>
             <p className="text-gray-400 mb-1"><strong>Channel:</strong> {camera.channel_number}</p>
