@@ -23,6 +23,7 @@ const OverviewPage = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("customDateLabel") || "");
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(localStorage.getItem("startDate") || new Date()),
@@ -41,7 +42,7 @@ const OverviewPage = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": userData?.id, // ✅ Ensure user ID is sent
+            "user-id": userData?.id,
           },
         });
 
@@ -89,7 +90,7 @@ const OverviewPage = () => {
           startDate.setDate(startDate.getDate() - 7);
         } else if (selectedDateRange === "Last 30 Days") {
           startDate.setDate(startDate.getDate() - 30);
-        } else if (selectedDateRange.includes("-")) {
+        } else if (selectedDateRange === "Custom") {
           startDate = dateRange[0].startDate;
           endDate = dateRange[0].endDate;
         }
@@ -118,9 +119,11 @@ const OverviewPage = () => {
 
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
-    setSelectedDateRange(formattedDateRange);
+    setSelectedDateRange("Custom");
+    setCustomDateLabel(formattedDateRange);
     setShowDatePicker(false);
-    localStorage.setItem("selectedDateRange", formattedDateRange);
+    localStorage.setItem("selectedDateRange", "Custom");
+    localStorage.setItem("customDateLabel", formattedDateRange);
     localStorage.setItem("startDate", dateRange[0].startDate);
     localStorage.setItem("endDate", dateRange[0].endDate);
   };
@@ -134,50 +137,56 @@ const OverviewPage = () => {
         {/* Filters: Date & Camera Selection */}
         <div className="flex justify-between items-center mb-6 relative">
           {/* Date Selector */}
-          <div className="relative">
-            <div className="flex items-center space-x-3">
-              <Calendar size={20} className="text-gray-400" />
-              <select
-                value={selectedDateRange}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSelectedDateRange(value);
-                  setShowDatePicker(value === "Custom");
-                }}
-                className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
-              >
-                <option>Today</option>
-                <option>Last 7 Days</option>
-                <option>Last 30 Days</option>
-                <option>Custom</option>
-              </select>
-            </div>
+          <div className="relative flex items-center space-x-3">
+            <Calendar size={20} className="text-gray-400" />
+            <select
+              value={selectedDateRange}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedDateRange(value);
+                setShowDatePicker(value === "Custom");
+                if (value !== "Custom") setCustomDateLabel("");
+              }}
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+            >
+              <option>Today</option>
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+              <option>Custom</option>
+            </select>
 
-            {/* Custom Date Picker UI */}
-            {showDatePicker && (
-              <div className="absolute top-12 left-0 bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-700 z-50">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-300">Select Date Range</span>
-                  <button onClick={() => setShowDatePicker(false)}>
-                    <X size={18} className="text-gray-400 hover:text-gray-300" />
-                  </button>
-                </div>
-                <DateRange
-                  ranges={dateRange}
-                  onChange={(ranges) => setDateRange([ranges.selection])}
-                  rangeColors={["#3B82F6"]}
-                  className="text-gray-200"
-                />
-                <button
-                  onClick={applyCustomDate}
-                  className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
-                >
-                  <Check size={16} className="mr-2" />
-                  Apply Date Range
-                </button>
-              </div>
+            {/* Display Selected Custom Date Range */}
+            {selectedDateRange === "Custom" && customDateLabel && (
+              <span className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md text-sm">
+                {customDateLabel}
+              </span>
             )}
           </div>
+
+          {/* Custom Date Picker UI */}
+          {showDatePicker && (
+            <div className="absolute top-12 left-0 bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-700 z-50">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-300">Select Date Range</span>
+                <button onClick={() => setShowDatePicker(false)}>
+                  <X size={18} className="text-gray-400 hover:text-gray-300" />
+                </button>
+              </div>
+              <DateRange
+                ranges={dateRange}
+                onChange={(ranges) => setDateRange([ranges.selection])}
+                rangeColors={["#3B82F6"]}
+                className="text-gray-200"
+              />
+              <button
+                onClick={applyCustomDate}
+                className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
+              >
+                <Check size={16} className="mr-2" />
+                Apply Date Range
+              </button>
+            </div>
+          )}
 
           {/* Camera Selector */}
           <div className="flex items-center space-x-3">
