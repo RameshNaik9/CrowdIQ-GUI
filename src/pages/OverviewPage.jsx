@@ -24,6 +24,7 @@ const OverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("customDateLabel") || "");
+  const [pendingCustomDate, setPendingCustomDate] = useState(false); // ✅ Prevents immediate fetching when "Custom" is selected
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(localStorage.getItem("startDate") || new Date()),
@@ -76,9 +77,9 @@ const OverviewPage = () => {
     localStorage.setItem("selectedCamera", selectedCamera);
   }, [selectedCamera]);
 
-  // ✅ Fetch analytics when camera or date range changes
+  // ✅ Fetch analytics when camera or date range changes (excluding pending "Custom" selection)
   useEffect(() => {
-    if (!selectedCamera) return;
+    if (!selectedCamera || pendingCustomDate) return;
 
     const fetchAnalytics = async () => {
       try {
@@ -115,13 +116,15 @@ const OverviewPage = () => {
     };
 
     fetchAnalytics();
-  }, [selectedCamera, selectedDateRange]);
+  }, [selectedCamera, selectedDateRange, pendingCustomDate]);
 
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
     setSelectedDateRange("Custom");
     setCustomDateLabel(formattedDateRange);
     setShowDatePicker(false);
+    setPendingCustomDate(false); // ✅ Allows API fetching only after "Apply" is clicked
+
     localStorage.setItem("selectedDateRange", "Custom");
     localStorage.setItem("customDateLabel", formattedDateRange);
     localStorage.setItem("startDate", dateRange[0].startDate);
@@ -145,7 +148,11 @@ const OverviewPage = () => {
                 const value = e.target.value;
                 setSelectedDateRange(value);
                 setShowDatePicker(value === "Custom");
-                if (value !== "Custom") setCustomDateLabel("");
+                if (value === "Custom") {
+                  setPendingCustomDate(true); // ✅ Prevents API fetching until "Apply Date Range" is clicked
+                } else {
+                  setCustomDateLabel(""); // ✅ Clear custom date label if switching back
+                }
               }}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
             >
