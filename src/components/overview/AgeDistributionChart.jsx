@@ -3,14 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981"];
 
-const ageData = [
-  { name: "18-25", count: 340 },
-  { name: "26-35", count: 620 },
-  { name: "36-50", count: 450 },
-  { name: "50+", count: 310 },
-];
-
-const AgeDistributionChart = () => {
+const AgeDistributionChart = ({ data }) => {
   return (
     <motion.div
       className="bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-700"
@@ -22,7 +15,7 @@ const AgeDistributionChart = () => {
 
       <div className="h-80">
         <ResponsiveContainer>
-          <BarChart data={ageData}>
+          <BarChart data={data || []}>
             <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
             <XAxis dataKey="name" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
@@ -32,7 +25,7 @@ const AgeDistributionChart = () => {
             />
             <Legend />
             <Bar dataKey="count" fill="#8884d8">
-              {ageData.map((entry, index) => (
+              {data?.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Bar>

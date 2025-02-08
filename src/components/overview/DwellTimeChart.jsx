@@ -1,16 +1,7 @@
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const dwellTimeData = [
-  { time: "0-5m", count: 120 },
-  { time: "5-10m", count: 200 },
-  { time: "10-20m", count: 340 },
-  { time: "20-30m", count: 180 },
-  { time: "30-60m", count: 90 },
-  { time: "60m+", count: 40 },
-];
-
-const DwellTimeChart = () => {
+const DwellTimeChart = ({ data }) => {
   return (
     <motion.div
       className="bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-700"
@@ -22,7 +13,7 @@ const DwellTimeChart = () => {
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={dwellTimeData}>
+          <LineChart data={data || []}>
             <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
             <XAxis dataKey="time" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />

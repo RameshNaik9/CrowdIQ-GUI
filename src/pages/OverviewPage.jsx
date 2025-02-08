@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Users, UserCheck, Clock, BarChart2, Calendar, Camera, X, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css"; // Default styles
-import "react-date-range/dist/theme/default.css"; // Theme styles
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
@@ -24,7 +24,7 @@ const OverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("customDateLabel") || "");
-  const [pendingCustomDate, setPendingCustomDate] = useState(false); // ✅ Prevents immediate fetching when "Custom" is selected
+  const [pendingCustomDate, setPendingCustomDate] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(localStorage.getItem("startDate") || new Date()),
@@ -106,8 +106,8 @@ const OverviewPage = () => {
 
         if (!response.ok) throw new Error("Failed to fetch analytics");
         const data = await response.json();
-        setAnalytics(data.data);
-        localStorage.setItem("overviewData", JSON.stringify(data.data));
+        setAnalytics(data.data[0]); // ✅ Store first item in `data`
+        localStorage.setItem("overviewData", JSON.stringify(data.data[0]));
       } catch (error) {
         console.error("Error fetching analytics:", error);
       } finally {
@@ -123,7 +123,7 @@ const OverviewPage = () => {
     setSelectedDateRange("Custom");
     setCustomDateLabel(formattedDateRange);
     setShowDatePicker(false);
-    setPendingCustomDate(false); // ✅ Allows API fetching only after "Apply" is clicked
+    setPendingCustomDate(false);
 
     localStorage.setItem("selectedDateRange", "Custom");
     localStorage.setItem("customDateLabel", formattedDateRange);
@@ -149,9 +149,9 @@ const OverviewPage = () => {
                 setSelectedDateRange(value);
                 setShowDatePicker(value === "Custom");
                 if (value === "Custom") {
-                  setPendingCustomDate(true); // ✅ Prevents API fetching until "Apply Date Range" is clicked
+                  setPendingCustomDate(true);
                 } else {
-                  setCustomDateLabel(""); // ✅ Clear custom date label if switching back
+                  setCustomDateLabel("");
                 }
               }}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
@@ -223,17 +223,12 @@ const OverviewPage = () => {
           <StatCard name="Avg. Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
         </motion.div>
 
-        {/* Charts Section */}
-        {loading ? (
-          <p className="text-center text-gray-400">Loading data...</p>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <VisitorTrendChart data={analytics?.visitorTrend || []} />
-            <GenderDistributionChart data={analytics?.genderDistribution || []} />
-            <AgeDistributionChart data={analytics?.ageDistribution || []} />
-            <DwellTimeChart data={analytics?.dwellTimeDistribution || []} />
-          </div>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <VisitorTrendChart data={analytics?.visitorTrend || []} />
+          <GenderDistributionChart data={analytics?.genderDistribution || []} />
+          <AgeDistributionChart data={analytics?.ageDistribution || []} />
+          <DwellTimeChart data={analytics?.dwellTimeDistribution || []} />
+        </div>
       </main>
     </div>
   );
