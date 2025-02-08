@@ -8,29 +8,86 @@ import AgeDistributionChart from "../components/overview/AgeDistributionChart";
 import GenderDistributionChart from "../components/overview/GenderDistributionChart";
 import DwellTimeChart from "../components/overview/DwellTimeChart";
 
-const demoCameras = [
-  { id: "1", name: "Main Entrance" },
-  { id: "2", name: "Lobby" },
-  { id: "3", name: "Parking Area" },
-];
-
 const OverviewPage = () => {
-  // ✅ Load stored values from localStorage
   const [selectedDateRange, setSelectedDateRange] = useState(() =>
     localStorage.getItem("selectedDateRange") || "Today"
   );
   const [selectedCamera, setSelectedCamera] = useState(() =>
-    localStorage.getItem("selectedCamera") || demoCameras[0].id
+    localStorage.getItem("selectedCamera") || null
   );
+  const [cameras, setCameras] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Save selections to localStorage whenever they change
+  // ✅ Fetch all cameras from API & store in localStorage
   useEffect(() => {
-    localStorage.setItem("selectedDateRange", selectedDateRange);
-  }, [selectedDateRange]);
+    const fetchCameras = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "user-id": userData?.id, // ✅ Ensure user ID is sent
+          },
+        });
 
+        if (!response.ok) throw new Error("Failed to fetch cameras");
+        const data = await response.json();
+
+        setCameras(data.data);
+        localStorage.setItem("cameras", JSON.stringify(data.data));
+
+        if (!selectedCamera && data.data.length > 0) {
+          setSelectedCamera(data.data[0]._id);
+          localStorage.setItem("selectedCamera", data.data[0]._id);
+        }
+      } catch (error) {
+        console.error("Error fetching cameras:", error);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
+  // ✅ Fetch analytics when camera or date range changes
   useEffect(() => {
-    localStorage.setItem("selectedCamera", selectedCamera);
-  }, [selectedCamera]);
+    if (!selectedCamera) return;
+
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        const startDate = new Date();
+        const endDate = new Date();
+
+        if (selectedDateRange === "Last 7 Days") {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (selectedDateRange === "Last 30 Days") {
+          startDate.setDate(startDate.getDate() - 30);
+        }
+
+        const response = await fetch(
+          `http://localhost:8080/api/v1/overview?cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch analytics");
+        const data = await response.json();
+        setAnalytics(data.data);
+        localStorage.setItem("overviewData", JSON.stringify(data.data));
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [selectedCamera, selectedDateRange]);
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
@@ -63,8 +120,10 @@ const OverviewPage = () => {
               onChange={(e) => setSelectedCamera(e.target.value)}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
             >
-              {demoCameras.map((camera) => (
-                <option key={camera.id} value={camera.id}>{camera.name}</option>
+              {cameras.map((camera) => (
+                <option key={camera._id} value={camera._id}>
+                  {camera.name}
+                </option>
               ))}
             </select>
           </div>
@@ -77,19 +136,23 @@ const OverviewPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <StatCard name="Total Visitors" icon={Users} value="2,345" color="#6366F1" />
-          <StatCard name="Male Visitors" icon={UserCheck} value="1,245" color="#8B5CF6" />
-          <StatCard name="Avg. Dwell Time" icon={Clock} value="14m 32s" color="#EC4899" />
-          <StatCard name="Avg. Age" icon={BarChart2} value="29 Years" color="#10B981" />
+          <StatCard name="Total Visitors" icon={Users} value={analytics?.totalVisitors || "0"} color="#6366F1" />
+          <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.maleVisitors || "0"} color="#8B5CF6" />
+          <StatCard name="Avg. Dwell Time" icon={Clock} value={analytics?.avgDwellTime || "0m"} color="#EC4899" />
+          <StatCard name="Avg. Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
         </motion.div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <VisitorTrendChart />
-          <GenderDistributionChart />
-          <AgeDistributionChart />
-          <DwellTimeChart />
-        </div>
+        {loading ? (
+          <p className="text-center text-gray-400">Loading data...</p>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <VisitorTrendChart data={analytics?.visitorTrend || []} />
+            <GenderDistributionChart data={analytics?.genderDistribution || []} />
+            <AgeDistributionChart data={analytics?.ageDistribution || []} />
+            <DwellTimeChart data={analytics?.dwellTimeDistribution || []} />
+          </div>
+        )}
       </main>
     </div>
   );
