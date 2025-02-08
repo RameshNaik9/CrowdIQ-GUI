@@ -158,29 +158,39 @@ const ConfigurationPage = () => {
           </button>
         </div>
 
-        {loading ? (
-          <p className="text-gray-400">Loading cameras...</p>
-        ) : error ? (
-          <p className="text-red-400">{error}</p>
-        ) : cameras.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cameras.map((camera) => (
-              <CameraCard
-                key={camera._id}
-                camera={camera}
-                expanded={expandedCard === camera._id}
-                onToggleExpand={() =>
-                  setExpandedCard(
-                    expandedCard === camera._id ? null : camera._id
-                  )
-                }
-                healthCheckActive={refreshing} // <-- Pass the refreshing state here
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-400">No previous connections found.</p>
-        )}
+        {/* Camera Grid with Centered Overlay When Refreshing */}
+        <div className="relative">
+          {loading ? (
+            <p className="text-gray-400">Loading cameras...</p>
+          ) : error ? (
+            <p className="text-red-400">{error}</p>
+          ) : cameras.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {cameras.map((camera) => (
+                <CameraCard
+                  key={camera._id}
+                  camera={camera}
+                  expanded={expandedCard === camera._id}
+                  onToggleExpand={() =>
+                    setExpandedCard(expandedCard === camera._id ? null : camera._id)
+                  }
+                  healthCheckActive={refreshing} // <-- Pass the refreshing state here
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400">No previous connections found.</p>
+          )}
+
+          {refreshing && (
+            <div className="absolute inset-0 flex items-center justify-center z-50">
+              <div className="bg-black bg-opacity-60 p-6 rounded-lg">
+                <span className="text-white text-lg">
+                  Performing health checks on cameras active within the last 48 hours..</span>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

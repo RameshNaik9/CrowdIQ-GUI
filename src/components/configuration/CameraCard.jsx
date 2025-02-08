@@ -80,11 +80,11 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
           isActive ? "border-b-4 border-green-400 rounded-b-md" : ""
         } ${healthCheckActive ? "filter blur-md pointer-events-none" : ""}`}
       >
-        {healthCheckActive && (
+        {/* {healthCheckActive && (
           <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
             Checking or running cameras health status which are connected in 2 days before
           </div>
-        )}
+        )} */}
 
         {/* Camera Basic Info */}
         <div className="flex items-center justify-between">
