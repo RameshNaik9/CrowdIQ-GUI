@@ -9,11 +9,11 @@ import GenderDistributionChart from "../components/overview/GenderDistributionCh
 import DwellTimeChart from "../components/overview/DwellTimeChart";
 
 const OverviewPage = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState(() =>
-    localStorage.getItem("selectedDateRange") || "Today"
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    () => localStorage.getItem("selectedDateRange") || "Today"
   );
-  const [selectedCamera, setSelectedCamera] = useState(() =>
-    localStorage.getItem("selectedCamera") || null
+  const [selectedCamera, setSelectedCamera] = useState(
+    () => localStorage.getItem("selectedCamera") || null
   );
   const [cameras, setCameras] = useState([]);
   const [analytics, setAnalytics] = useState(null);
@@ -39,7 +39,9 @@ const OverviewPage = () => {
         setCameras(data.data);
         localStorage.setItem("cameras", JSON.stringify(data.data));
 
-        if (!selectedCamera && data.data.length > 0) {
+        // ✅ Ensure the selected camera persists across refreshes
+        const storedCamera = localStorage.getItem("selectedCamera");
+        if (!storedCamera && data.data.length > 0) {
           setSelectedCamera(data.data[0]._id);
           localStorage.setItem("selectedCamera", data.data[0]._id);
         }
@@ -50,6 +52,16 @@ const OverviewPage = () => {
 
     fetchCameras();
   }, []);
+
+  // ✅ Persist selected date range in localStorage
+  useEffect(() => {
+    localStorage.setItem("selectedDateRange", selectedDateRange);
+  }, [selectedDateRange]);
+
+  // ✅ Persist selected camera in localStorage
+  useEffect(() => {
+    localStorage.setItem("selectedCamera", selectedCamera);
+  }, [selectedCamera]);
 
   // ✅ Fetch analytics when camera or date range changes
   useEffect(() => {
