@@ -8,6 +8,13 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
   const [expandedState, setExpanded] = useState(expanded || false); // ✅ State to track expanded view
   const [isActive, setIsActive] = useState(false); // ✅ Track if the camera is active
 
+  // Format the last active time professionally in 12-hour format
+  const formattedLastActive = new Date(camera.last_active).toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    hour12: true
+  });
+
   // ✅ Check if this camera is already active
   useEffect(() => {
     const activeCamera = JSON.parse(localStorage.getItem("activeCamera"));
@@ -80,18 +87,12 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
           isActive ? "border-b-4 border-green-400 rounded-b-md" : ""
         } ${healthCheckActive ? "filter blur-md pointer-events-none" : ""}`}
       >
-        {/* {healthCheckActive && (
-          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-            Checking or running cameras health status which are connected in 2 days before
-          </div>
-        )} */}
-
         {/* Camera Basic Info */}
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
             <p className="text-gray-400 text-sm truncate w-48">{camera.location}</p>
-            <p className="text-gray-500 text-xs">Last Active: {camera.last_active}</p>
+            <p className="text-gray-500 text-xs">Last Active: {formattedLastActive}</p>
           </div>
           {/* Status Icon */}
           <div className="flex items-center">
@@ -148,11 +149,11 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-lg w-full transform scale-95 animate-scale-up">
             {/* Close Button */}
             <button
-  onClick={onToggleExpand}
-  className="absolute top-4 right-4 text-gray-400 hover:text-white"
->
-  <X size={24} />
-</button>
+              onClick={onToggleExpand}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X size={24} />
+            </button>
 
             {/* Camera Details */}
             <h2 className="text-2xl font-semibold text-gray-100 mb-4">{camera.name}</h2>
@@ -161,7 +162,7 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
             <p className="text-gray-400 mb-1"><strong>Port:</strong> {camera.port}</p>
             <p className="text-gray-400 mb-1"><strong>Channel:</strong> {camera.channel_number}</p>
             <p className="text-gray-400 mb-1"><strong>Stream Type:</strong> {camera.stream_type}</p>
-            <p className="text-gray-400 mb-4"><strong>Last Active:</strong> {camera.last_active}</p>
+            <p className="text-gray-400 mb-4"><strong>Last Active:</strong> {formattedLastActive}</p>
 
             {/* Buttons in Expanded View */}
             <div className="flex justify-between">
