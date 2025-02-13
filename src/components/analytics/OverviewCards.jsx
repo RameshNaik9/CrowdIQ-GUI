@@ -45,13 +45,20 @@ const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
     return isNaN(parsed) ? "0.00" : parsed.toFixed(decimalPlaces);
   };
 
+  // ✅ Format date range dynamically for tooltips
+  const formatDateRange = () => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+  };
+
   const overviewData = [
     {
       name: "Avg Visitors Per Day",
       value: loading ? "..." : Math.round(kpiData?.avgVisitorsPerDay || 0),
       change: loading ? "0.00" : formatNumber(kpiData?.avgVisitorsChange),
       icon: Users,
-      tooltip: `On average, ${Math.round(kpiData?.avgVisitorsPerDay || 0)} visitors came per day during the selected period.`,
+      tooltip: `During ${formatDateRange()}, an average of ${Math.round(kpiData?.avgVisitorsPerDay || 0)} visitors were recorded per day.`,
     },
     {
       name: "Peak Hour",
@@ -60,21 +67,21 @@ const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
         : `${kpiData?.peakHour || "N/A"} (${kpiData?.peakHourVisitors || 0})`,
       change: loading ? "0.00" : formatNumber(kpiData?.peakHourChange),
       icon: BarChart2,
-      tooltip: `The highest visitor count was recorded at ${kpiData?.peakHour || "N/A"}, with ${kpiData?.peakHourVisitors || 0} visitors.`,
+      tooltip: `On ${formatDateRange()}, the highest number of visitors (${kpiData?.peakHourVisitors || 0}) was recorded at ${kpiData?.peakHour || "N/A"}.`,
     },
     {
       name: "Dwell Time",
       value: loading ? "..." : kpiData?.dwellTime || "0m 0s",
       change: loading ? "0.00" : formatNumber(kpiData?.dwellTimeChange),
       icon: Clock,
-      tooltip: `Visitors spent an average of ${kpiData?.dwellTime || "0m 0s"} in the monitored area.`,
+      tooltip: `On ${formatDateRange()}, the average visitor dwell time was ${kpiData?.dwellTime || "0m 0s"}.`,
     },
     {
       name: "Returning Visitors",
       value: loading ? "..." : `${formatNumber(kpiData?.returningVisitors)}%`,
       change: loading ? "0.00" : formatNumber(kpiData?.returningVisitorsChange),
       icon: UserCheck,
-      tooltip: `${formatNumber(kpiData?.returningVisitors)}% of visitors were returning customers compared to the previous period.`,
+      tooltip: `During ${formatDateRange()}, ${formatNumber(kpiData?.returningVisitors)}% of visitors were returning visitors compared to the previous period.`,
     },
   ];
 
