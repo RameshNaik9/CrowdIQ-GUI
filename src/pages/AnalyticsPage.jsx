@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/common/Header";
 import OverviewCards from "../components/analytics/OverviewCards";
 import VisitorTrendChart from "../components/analytics/VisitorTrendChart";
+import AvgVisitorsByGenderChart from "../components/analytics/AvgVisitorsByGenderChart";
 import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
 import VisitorSegmentationChart from "../components/analytics/VisitorSegmentationChart";
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
@@ -204,7 +205,12 @@ const AnalyticsPage = () => {
 
         {/* Remaining Charts in 2x2 Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <EntryExitFlowChart />
+          {/* <EntryExitFlowChart /> */}
+          <AvgVisitorsByGenderChart 
+            cameraId={selectedCamera} 
+            startDate={dateRange[0].startDate.toISOString()} 
+            endDate={dateRange[0].endDate.toISOString()} 
+          />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
           <AgeRangeDistributionChart />
