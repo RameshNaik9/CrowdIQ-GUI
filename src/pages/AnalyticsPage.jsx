@@ -25,8 +25,8 @@ const AnalyticsPage = () => {
   const [pendingCustomDate, setPendingCustomDate] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
-      startDate: new Date(localStorage.getItem("startDate") || new Date()),
-      endDate: new Date(localStorage.getItem("endDate") || new Date()),
+      startDate: new Date(),
+      endDate: new Date(),
       key: "selection",
     },
   ]);
@@ -70,10 +70,23 @@ const AnalyticsPage = () => {
     localStorage.setItem("selectedDateRange", selectedDateRange);
   }, [selectedDateRange]);
 
-  // ✅ Persist selected camera in localStorage and fetch data on switch
+  // ✅ Persist selected camera in localStorage
   useEffect(() => {
     localStorage.setItem("selectedCamera", selectedCamera);
   }, [selectedCamera]);
+
+  // ✅ Handle date range updates dynamically
+  useEffect(() => {
+    if (selectedDateRange === "Last 7 Days") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      setDateRange([{ startDate, endDate: new Date(), key: "selection" }]);
+    } else if (selectedDateRange === "Last 30 Days") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      setDateRange([{ startDate, endDate: new Date(), key: "selection" }]);
+    }
+  }, [selectedDateRange]);
 
   // ✅ Apply custom date selection
   const applyCustomDate = () => {
@@ -179,13 +192,9 @@ const AnalyticsPage = () => {
           endDate={dateRange[0].endDate.toISOString()}
         />
 
-        {/* Visitor Trends (Hourly) - Full Width */}
-        <div className="col-span-2 mb-8">
-          <VisitorTrendChart />
-        </div>
-
-        {/* Remaining Charts in 2x2 Grid Layout */}
+        {/* Other Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <VisitorTrendChart />
           <EntryExitFlowChart />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
