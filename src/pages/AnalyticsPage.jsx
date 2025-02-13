@@ -5,27 +5,21 @@ import VisitorTrendChart from "../components/analytics/VisitorTrendChart";
 import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
 import VisitorSegmentationChart from "../components/analytics/VisitorSegmentationChart";
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
-// import VisitorEngagementHeatmap from "../components/analytics/VisitorEngagementHeatmap";
 import AgeRangeDistributionChart from "../components/analytics/AgeRangeDistributionChart";
 import AIPoweredInsights from "../components/analytics/AIPoweredInsights";
 import { Calendar, Camera, X, Check } from "lucide-react";
 import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css"; // Default styles
-import "react-date-range/dist/theme/default.css"; // Theme styles
-
-const demoCameras = [
-  { id: "1", name: "Main Entrance" },
-  { id: "2", name: "Lobby" },
-  { id: "3", name: "Parking Area" },
-];
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
 const AnalyticsPage = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState(() =>
-    localStorage.getItem("selectedDateRange") || "Last 7 Days"
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    () => localStorage.getItem("selectedDateRange") || "Last 7 Days"
   );
-  const [selectedCamera, setSelectedCamera] = useState(() =>
-    localStorage.getItem("selectedCamera") || demoCameras[0].id
+  const [selectedCamera, setSelectedCamera] = useState(
+    () => localStorage.getItem("selectedCamera") || null
   );
+  const [cameras, setCameras] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
@@ -34,24 +28,52 @@ const AnalyticsPage = () => {
       key: "selection",
     },
   ]);
-  const [data, setData] = useState(null); // Placeholder for fetched data
 
+  // ✅ Fetch cameras from API and store in localStorage
   useEffect(() => {
-    // Store selections in localStorage to persist after refresh
+    const fetchCameras = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "user-id": userData?.id,
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch cameras");
+        const data = await response.json();
+
+        setCameras(data.data);
+        localStorage.setItem("cameras", JSON.stringify(data.data));
+
+        // ✅ Ensure selected camera persists across refreshes
+        const storedCamera = localStorage.getItem("selectedCamera");
+        if (!storedCamera && data.data.length > 0) {
+          setSelectedCamera(data.data[0]._id);
+          localStorage.setItem("selectedCamera", data.data[0]._id);
+        }
+      } catch (error) {
+        console.error("Error fetching cameras:", error);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
+  // ✅ Persist selected date range in localStorage
+  useEffect(() => {
     localStorage.setItem("selectedDateRange", selectedDateRange);
+  }, [selectedDateRange]);
+
+  // ✅ Persist selected camera in localStorage and fetch data on switch
+  useEffect(() => {
     localStorage.setItem("selectedCamera", selectedCamera);
-    if (selectedDateRange.includes("-")) {
-      localStorage.setItem("startDate", dateRange[0].startDate);
-      localStorage.setItem("endDate", dateRange[0].endDate);
-    }
+  }, [selectedCamera]);
 
-    // 🔥 **Simulated API Fetch (Replace with real API call)**
-    console.log(`Fetching data for ${selectedDateRange}, Camera ID: ${selectedCamera}`);
-    setTimeout(() => {
-      setData({ message: "New data loaded!" });
-    }, 500); // Simulate delay
-  }, [selectedDateRange, selectedCamera]);
-
+  // ✅ Apply custom date selection
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
     setSelectedDateRange(formattedDateRange);
@@ -122,19 +144,16 @@ const AnalyticsPage = () => {
               }}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
             >
-              {demoCameras.map((camera) => (
-                <option key={camera.id} value={camera.id}>{camera.name}</option>
+              {cameras.map((camera) => (
+                <option key={camera._id} value={camera._id}>
+                  {camera.name}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Data Fetch Message (Demo) */}
-        {data && (
-          <p className="text-green-400 text-sm text-center mb-4">{data.message}</p>
-        )}
-
-        {/* <OverviewCards /> */}
+        {/* KPI Cards (Overview) */}
         <OverviewCards
           cameraId={selectedCamera}
           selectedDateRange={selectedDateRange}
@@ -153,8 +172,7 @@ const AnalyticsPage = () => {
           <EntryExitFlowChart />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
-          {/* <VisitorEngagementHeatmap /> */}
-      <AgeRangeDistributionChart />
+          <AgeRangeDistributionChart />
         </div>
 
         <AIPoweredInsights />
