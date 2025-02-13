@@ -39,29 +39,35 @@ const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
     fetchKPIData();
   }, [userId, cameraId, selectedDateRange, startDate, endDate]);
 
+  // ✅ Ensure the number is valid before applying `.toFixed(2)`
+  const formatNumber = (num) => {
+    const parsed = parseFloat(num);
+    return isNaN(parsed) ? "0.00" : parsed.toFixed(2);
+  };
+
   const overviewData = [
     {
       name: "Avg Visitors Per Day",
-      value: loading ? "..." : kpiData?.avgVisitorsPerDay || "0",
-      change: loading ? 0 : kpiData?.avgVisitorsChange || 0,
+      value: loading ? "..." : Math.round(kpiData?.avgVisitorsPerDay || 0), // Ensures integer value
+      change: loading ? "0.00" : formatNumber(kpiData?.avgVisitorsChange),
       icon: Users,
     },
     {
       name: "Peak Hour",
       value: loading ? "..." : kpiData?.peakHour || "N/A",
-      change: loading ? 0 : kpiData?.peakHourChange || 0,
+      change: loading ? "0.00" : formatNumber(kpiData?.peakHourChange),
       icon: BarChart2,
     },
     {
       name: "Dwell Time",
       value: loading ? "..." : kpiData?.dwellTime || "0m 0s",
-      change: loading ? 0 : kpiData?.dwellTimeChange || 0,
+      change: loading ? "0.00" : formatNumber(kpiData?.dwellTimeChange),
       icon: Clock,
     },
     {
       name: "Returning Visitors",
-      value: loading ? "..." : kpiData?.returningVisitors || "0%",
-      change: loading ? 0 : kpiData?.returningVisitorsChange || 0,
+      value: loading ? "..." : `${formatNumber(kpiData?.returningVisitors)}%`,
+      change: loading ? "0.00" : formatNumber(kpiData?.returningVisitorsChange),
       icon: UserCheck,
     },
   ];
