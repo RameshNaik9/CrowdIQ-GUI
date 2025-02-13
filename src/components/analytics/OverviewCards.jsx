@@ -39,10 +39,10 @@ const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
     fetchKPIData();
   }, [userId, cameraId, selectedDateRange, startDate, endDate]);
 
-  // ✅ Ensure the number is valid before applying `.toFixed(2)`
-  const formatNumber = (num) => {
+  // ✅ Ensure numbers are formatted correctly
+  const formatNumber = (num, decimalPlaces = 2) => {
     const parsed = parseFloat(num);
-    return isNaN(parsed) ? "0.00" : parsed.toFixed(2);
+    return isNaN(parsed) ? "0.00" : parsed.toFixed(decimalPlaces);
   };
 
   const overviewData = [
@@ -54,7 +54,9 @@ const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
     },
     {
       name: "Peak Hour",
-      value: loading ? "..." : kpiData?.peakHour || "N/A",
+      value: loading
+        ? "..."
+        : `${kpiData?.peakHour || "N/A"} (${kpiData?.peakHourVisitors || 0})`, // ✅ Added (250) format
       change: loading ? "0.00" : formatNumber(kpiData?.peakHourChange),
       icon: BarChart2,
     },
