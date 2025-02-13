@@ -134,7 +134,14 @@ const AnalyticsPage = () => {
           <p className="text-green-400 text-sm text-center mb-4">{data.message}</p>
         )}
 
-        <OverviewCards />
+        {/* <OverviewCards /> */}
+        <OverviewCards
+          cameraId={selectedCamera}
+          selectedDateRange={selectedDateRange}
+          startDate={dateRange[0].startDate.toISOString()}
+          endDate={dateRange[0].endDate.toISOString()}
+        />
+
 
         {/* Visitor Trends (Hourly) - Full Width */}
         <div className="col-span-2 mb-8">

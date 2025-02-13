@@ -1,14 +1,71 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Users, Clock, BarChart2, UserCheck, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
-const overviewData = [
-  { name: "Total Visitors", value: "4,321", change: 5.2, icon: Users },
-  { name: "Peak Hour Comparison", value: "2 PM - 3 PM", change: -3.8, icon: BarChart2 },
-  { name: "Dwell Time Change", value: "15m 42s", change: 7.1, icon: Clock },
-  { name: "Returning Visitors", value: "45%", change: 2.4, icon: UserCheck },
-];
+const OverviewCards = ({ cameraId, selectedDateRange, startDate, endDate }) => {
+  const [kpiData, setKpiData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // ✅ Extract userId from localStorage
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData?.id;
 
-const OverviewCards = () => {
+  useEffect(() => {
+    if (!userId || !cameraId) return;
+
+    const fetchKPIData = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          `http://localhost:8080/api/v1/analytics/kpi?userId=${userId}&cameraId=${cameraId}&startDate=${startDate}&endDate=${endDate}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch KPI data");
+
+        const data = await response.json();
+        setKpiData(data.data);
+      } catch (error) {
+        console.error("Error fetching KPI data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKPIData();
+  }, [userId, cameraId, selectedDateRange, startDate, endDate]);
+
+  const overviewData = [
+    {
+      name: "Avg Visitors Per Day",
+      value: loading ? "..." : kpiData?.avgVisitorsPerDay || "0",
+      change: loading ? 0 : kpiData?.avgVisitorsChange || 0,
+      icon: Users,
+    },
+    {
+      name: "Peak Hour",
+      value: loading ? "..." : kpiData?.peakHour || "N/A",
+      change: loading ? 0 : kpiData?.peakHourChange || 0,
+      icon: BarChart2,
+    },
+    {
+      name: "Dwell Time",
+      value: loading ? "..." : kpiData?.dwellTime || "0m 0s",
+      change: loading ? 0 : kpiData?.dwellTimeChange || 0,
+      icon: Clock,
+    },
+    {
+      name: "Returning Visitors",
+      value: loading ? "..." : kpiData?.returningVisitors || "0%",
+      change: loading ? 0 : kpiData?.returningVisitorsChange || 0,
+      icon: UserCheck,
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
       {overviewData.map((item, index) => (
@@ -26,7 +83,9 @@ const OverviewCards = () => {
             </div>
 
             <div
-              className={`p-3 rounded-full bg-opacity-20 ${item.change >= 0 ? "bg-green-500" : "bg-red-500"}`}
+              className={`p-3 rounded-full bg-opacity-20 ${
+                item.change >= 0 ? "bg-green-500" : "bg-red-500"
+              }`}
             >
               <item.icon className={`${item.change >= 0 ? "text-green-500" : "text-red-500"}`} size={24} />
             </div>
