@@ -46,6 +46,13 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
     fetchLogs();
   }, [selectedCamera, selectedDateRange]);
 
+  // ✅ Fetch logs when custom date range is applied
+  useEffect(() => {
+    if (selectedDateRange === "Custom") {
+      fetchLogs();
+    }
+  }, [localStorage.getItem("rawDataStartDate"), localStorage.getItem("rawDataEndDate")]);
+
   // ✅ Filter logs based on search term
   useEffect(() => {
     setFilteredLogs(
