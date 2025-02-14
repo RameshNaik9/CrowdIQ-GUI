@@ -212,8 +212,13 @@ const AnalyticsPage = () => {
             endDate={dateRange[0].endDate.toISOString()} 
           />
           <VisitorSegmentationChart />
-          <DwellTimeRetentionChart />
+          {/* <DwellTimeRetentionChart /> */}
           {/* <AgeRangeDistributionChart /> */}
+          <DwellTimeRetentionChart 
+  selectedCamera={selectedCamera} 
+  selectedDateRange={selectedDateRange} 
+/>
+
           <AgeRangeDistributionChart 
             cameraId={selectedCamera} 
             startDate={dateRange[0].startDate.toISOString()} 
