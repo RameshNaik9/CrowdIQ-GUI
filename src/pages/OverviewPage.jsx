@@ -14,21 +14,21 @@ import DwellTimeChart from "../components/overview/DwellTimeChart";
 
 const OverviewPage = () => {
   const [selectedDateRange, setSelectedDateRange] = useState(
-    () => localStorage.getItem("selectedDateRange") || "Today"
+    () => localStorage.getItem("overview_selectedDateRange") || "Today"
   );
   const [selectedCamera, setSelectedCamera] = useState(
-    () => localStorage.getItem("selectedCamera") || null
+    () => localStorage.getItem("overview_selectedCamera") || null
   );
   const [cameras, setCameras] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("customDateLabel") || "");
+  const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("overview_customDateLabel") || "");
   const [pendingCustomDate, setPendingCustomDate] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
-      startDate: new Date(localStorage.getItem("startDate") || new Date()),
-      endDate: new Date(localStorage.getItem("endDate") || new Date()),
+      startDate: new Date(localStorage.getItem("overview_startDate") || new Date()),
+      endDate: new Date(localStorage.getItem("overview_endDate") || new Date()),
       key: "selection",
     },
   ]);
@@ -54,13 +54,16 @@ const OverviewPage = () => {
         const data = await response.json();
 
         setCameras(data.data);
-        localStorage.setItem("cameras", JSON.stringify(data.data));
+        localStorage.setItem("overview_cameras", JSON.stringify(data.data));
 
-        // ✅ Ensure the selected camera persists across refreshes
-        const storedCamera = localStorage.getItem("selectedCamera");
-        if (!storedCamera && data.data.length > 0) {
-          setSelectedCamera(data.data[0]._id);
-          localStorage.setItem("selectedCamera", data.data[0]._id);
+        // ✅ Select active camera first, if available
+        const activeCamera = data.data.find((cam) => cam.status === "online");
+        const defaultCamera = data.data.length > 0 ? data.data[0]._id : null;
+
+        if (!selectedCamera || !data.data.some((cam) => cam._id === selectedCamera)) {
+          const newSelectedCamera = activeCamera ? activeCamera._id : defaultCamera;
+          setSelectedCamera(newSelectedCamera);
+          localStorage.setItem("overview_selectedCamera", newSelectedCamera);
         }
       } catch (error) {
         console.error("Error fetching cameras:", error);
@@ -72,12 +75,12 @@ const OverviewPage = () => {
 
   // ✅ Persist selected date range in localStorage
   useEffect(() => {
-    localStorage.setItem("selectedDateRange", selectedDateRange);
+    localStorage.setItem("overview_selectedDateRange", selectedDateRange);
   }, [selectedDateRange]);
 
   // ✅ Persist selected camera in localStorage
   useEffect(() => {
-    localStorage.setItem("selectedCamera", selectedCamera);
+    localStorage.setItem("overview_selectedCamera", selectedCamera);
   }, [selectedCamera]);
 
   // ✅ Fetch analytics when camera or date range changes (excluding pending "Custom" selection)
@@ -137,10 +140,10 @@ const OverviewPage = () => {
     setShowDatePicker(false);
     setPendingCustomDate(false);
 
-    localStorage.setItem("selectedDateRange", "Custom");
-    localStorage.setItem("customDateLabel", formattedDateRange);
-    localStorage.setItem("startDate", dateRange[0].startDate);
-    localStorage.setItem("endDate", dateRange[0].endDate);
+    localStorage.setItem("overview_selectedDateRange", "Custom");
+    localStorage.setItem("overview_customDateLabel", formattedDateRange);
+    localStorage.setItem("overview_startDate", dateRange[0].startDate);
+    localStorage.setItem("overview_endDate", dateRange[0].endDate);
   };
 
   return (
@@ -217,7 +220,7 @@ const OverviewPage = () => {
             >
               {cameras.map((camera) => (
                 <option key={camera._id} value={camera._id}>
-                  {camera.name}
+                  {camera.name} {camera.status === "online" ? "🟢" : "🔴"}
                 </option>
               ))}
             </select>
