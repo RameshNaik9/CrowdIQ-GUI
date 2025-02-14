@@ -15,7 +15,6 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
     let endDate = new Date();
     const userData = JSON.parse(localStorage.getItem("user"));
 
-
     if (selectedDateRange === "Last 7 Days") {
       startDate.setDate(startDate.getDate() - 7);
     } else if (selectedDateRange === "Last 30 Days") {
@@ -135,10 +134,10 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
                   {entry.time_spent}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  {entry.first_appearance}
+                  {new Date(entry.first_appearance).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  {entry.last_appearance}
+                  {new Date(entry.last_appearance).toLocaleString()}
                 </td>
               </motion.tr>
             ))}
