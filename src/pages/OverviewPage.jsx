@@ -92,11 +92,20 @@ const OverviewPage = () => {
 
         if (selectedDateRange === "Last 7 Days") {
           startDate.setDate(startDate.getDate() - 7);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
         } else if (selectedDateRange === "Last 30 Days") {
           startDate.setDate(startDate.getDate() - 30);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (selectedDateRange === "Today") {
+          startDate.setHours(0, 0, 0, 0); // ✅ Start of today
+          endDate.setHours(23, 59, 59, 999); // ✅ End of today
         } else if (selectedDateRange === "Custom") {
-          startDate = dateRange[0].startDate;
-          endDate = dateRange[0].endDate;
+          startDate = new Date(dateRange[0].startDate);
+          endDate = new Date(dateRange[0].endDate);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
         }
 
         const response = await fetch(
@@ -221,7 +230,15 @@ const OverviewPage = () => {
           transition={{ duration: 1 }}
           >
           <StatCard name="Total Visitors" icon={Users} value={analytics?.totalVisitors || "0"} color="#6366F1" />
-          <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.avgMalePerDay || "0"} color="#8B5CF6" />
+          {/* <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.avgMalePerDay || "0"} color="#8B5CF6" /> */}
+            <StatCard
+              name="Male Visitors"
+              icon={UserCheck}
+              value={
+                analytics?.genderDistribution?.find((g) => g.name === "Male")?.value || "0"
+              }
+              color="#8B5CF6"
+            />
           <StatCard name="Avg. Dwell Time" icon={Clock} value={analytics?.avgDwellTime || "0m"} color="#EC4899" />
           <StatCard name="Average Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
         </motion.div>
