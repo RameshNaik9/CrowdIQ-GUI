@@ -33,17 +33,20 @@ const OverviewPage = () => {
     },
   ]);
 
+  // ✅ Extract userId from localStorage
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData?.id;
+
   // ✅ Fetch all cameras from API & store in localStorage
   useEffect(() => {
     const fetchCameras = async () => {
       try {
-        const userData = JSON.parse(localStorage.getItem("user"));
         const response = await fetch(`http://localhost:8080/api/v1/cameras`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": userData?.id,
+            "user-id": userId,
           },
         });
 
@@ -79,7 +82,7 @@ const OverviewPage = () => {
 
   // ✅ Fetch analytics when camera or date range changes (excluding pending "Custom" selection)
   useEffect(() => {
-    if (!selectedCamera || pendingCustomDate) return;
+    if (!userId || !selectedCamera || pendingCustomDate) return;
 
     const fetchAnalytics = async () => {
       try {
@@ -97,7 +100,7 @@ const OverviewPage = () => {
         }
 
         const response = await fetch(
-          `http://localhost:8080/api/v1/overview?cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+          `http://localhost:8080/api/v1/overview?userId=${userId}&cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -106,8 +109,8 @@ const OverviewPage = () => {
 
         if (!response.ok) throw new Error("Failed to fetch analytics");
         const data = await response.json();
-        setAnalytics(data.data[0]); // ✅ Store first item in `data`
-        localStorage.setItem("overviewData", JSON.stringify(data.data[0]));
+        setAnalytics(data.data); // ✅ Store analytics data
+        localStorage.setItem("overviewData", JSON.stringify(data.data));
       } catch (error) {
         console.error("Error fetching analytics:", error);
       } finally {
@@ -116,7 +119,7 @@ const OverviewPage = () => {
     };
 
     fetchAnalytics();
-  }, [selectedCamera, selectedDateRange, pendingCustomDate]);
+  }, [userId, selectedCamera, selectedDateRange, pendingCustomDate]);
 
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
@@ -218,7 +221,7 @@ const OverviewPage = () => {
           transition={{ duration: 1 }}
           >
           <StatCard name="Total Visitors" icon={Users} value={analytics?.totalVisitors || "0"} color="#6366F1" />
-          <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.maleVisitors || "0"} color="#8B5CF6" />
+          <StatCard name="Male Visitors" icon={UserCheck} value={analytics?.avgMalePerDay || "0"} color="#8B5CF6" />
           <StatCard name="Avg. Dwell Time" icon={Clock} value={analytics?.avgDwellTime || "0m"} color="#EC4899" />
           <StatCard name="Average Age" icon={BarChart2} value={analytics?.avgAge || "0"} color="#10B981" />
         </motion.div>
