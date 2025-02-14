@@ -3,6 +3,29 @@ import { motion } from "framer-motion";
 
 const COLORS = ["#6366F1", "#EC4899"];
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    return (
+      <div
+        className="p-3 rounded-md shadow-lg"
+        style={{
+          backgroundColor: "rgba(31, 41, 55, 0.9)", // Dark theme background
+          borderColor: "rgba(109, 122, 140, 0.8)", // Border color
+        }}
+      >
+        <p
+          className="text-sm font-medium"
+          style={{ color: data.payload.fill }} // Match text color to segment color
+        >
+          {data.name}: {data.value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const GenderDistributionChart = ({ data }) => {
   return (
     <motion.div className="bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-700">
@@ -15,7 +38,7 @@ const GenderDistributionChart = ({ data }) => {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
