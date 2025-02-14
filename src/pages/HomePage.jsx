@@ -36,15 +36,15 @@ const HomePage = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
       >
-        <Link to="/login">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg transition flex items-center"
-          >
-            Login and Explore
-          </motion.button>
-        </Link>
+      <Link to="/login">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-4 text-lg font-semibold bg-[#4A9EA5] hover:bg-[#2E8B92] rounded-lg shadow-lg transition flex items-center text-white"
+        >
+          Login and Explore
+        </motion.button>
+      </Link>
       </motion.div>
 
       {/* Powered by DevelMo (With Smooth Light Glow Beneath Logo) */}
