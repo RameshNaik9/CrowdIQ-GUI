@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, Download } from "lucide-react";
+import { exportToCSV } from "../../utils/exportUtils";
 
 const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,6 +65,11 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
     );
   }, [searchTerm, logs]);
 
+  const handleDownload = () => {
+    const fileName = `${selectedCamera}_${selectedDateRange}_rawlogs`;
+    exportToCSV(filteredLogs, fileName);
+  };
+
   return (
     <motion.div
       className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
@@ -71,18 +77,27 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      {/* Header with Search */}
+      {/* Header with Search and Download */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-100">Tracking Data</h2>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search tracking ID, gender, age..."
-            className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleDownload}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+          >
+            <Download className="mr-2" size={18} />
+            Download
+          </button>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search tracking ID, gender, age..."
+              className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          </div>
         </div>
       </div>
 
