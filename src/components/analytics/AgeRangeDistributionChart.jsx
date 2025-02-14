@@ -43,7 +43,7 @@ const AgeRangeDistributionChart = ({ cameraId, startDate, endDate }) => {
       return (
         <div className="bg-gray-900 p-3 rounded-lg shadow-md border border-gray-700 text-gray-300">
           <h4 className="text-sm font-medium text-blue-400">{ageGroup} Age Group</h4>
-          <p className="text-xs">👥 Total Visitors: <span className="font-bold">{total}</span></p>
+          <p className="text-xs">👥 Avg Daily Visitors: <span className="font-bold">{total}</span></p>
           <p className="text-xs text-blue-400">👨 Males: <span className="font-bold">{males}</span></p>
           <p className="text-xs text-pink-400">👩 Females: <span className="font-bold">{females}</span></p>
         </div>
@@ -61,8 +61,8 @@ const AgeRangeDistributionChart = ({ cameraId, startDate, endDate }) => {
           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={ageRangeData}>
             <PolarGrid stroke="#374151" />
             <PolarAngleAxis dataKey="ageGroup" stroke="#9CA3AF" />
-            <PolarRadiusAxis angle={30} domain={[0, 600]} stroke="#9CA3AF" />
-            <Radar name="Total Visitors" dataKey="total" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
+            <PolarRadiusAxis angle={30} domain={[0, 1000]} stroke="#9CA3AF" />
+            <Radar name="Avg Daily Visitors" dataKey="total" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
             <Legend />
             <Tooltip content={<CustomTooltip />} />
           </RadarChart>
