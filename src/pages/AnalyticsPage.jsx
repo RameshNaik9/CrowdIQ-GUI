@@ -213,7 +213,13 @@ const AnalyticsPage = () => {
           />
           <VisitorSegmentationChart />
           <DwellTimeRetentionChart />
-          <AgeRangeDistributionChart />
+          {/* <AgeRangeDistributionChart /> */}
+          <AgeRangeDistributionChart 
+            cameraId={selectedCamera} 
+            startDate={dateRange[0].startDate.toISOString()} 
+            endDate={dateRange[0].endDate.toISOString()} 
+          />
+
         </div>
 
         <AIPoweredInsights />

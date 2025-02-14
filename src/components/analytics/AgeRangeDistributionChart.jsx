@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   ResponsiveContainer,
@@ -11,32 +11,46 @@ import {
   Tooltip,
 } from "recharts";
 
-const ageRangeData = [
-  { ageGroup: "0-18", total: 150, males: 80, females: 70 },
-  { ageGroup: "18-25", total: 320, males: 180, females: 140 },
-  { ageGroup: "26-35", total: 500, males: 260, females: 240 },
-  { ageGroup: "36-50", total: 420, males: 230, females: 190 },
-  { ageGroup: "50+", total: 300, males: 140, females: 160 },
-];
+const AgeRangeDistributionChart = ({ cameraId, startDate, endDate }) => {
+  const [ageRangeData, setAgeRangeData] = useState([]);
 
-// ✅ Custom Tooltip Component with Matching UI
-const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    const { ageGroup, total, males, females } = payload[0].payload;
-    return (
-      <div className="bg-gray-900 p-3 rounded-lg shadow-md border border-gray-700 text-gray-300">
-        <h4 className="text-sm font-medium text-blue-400">{ageGroup} Age Group</h4>
-        <p className="text-xs">👥 Total Visitors: <span className="font-bold">{total}</span></p>
-        <p className="text-xs text-blue-400">👨 Males: <span className="font-bold">{males}</span></p>
-        <p className="text-xs text-pink-400">👩 Females: <span className="font-bold">{females}</span></p>
-      </div>
-    );
-  }
-  return null;
-};
+  // ✅ Fetch Age Range Data from API
+  useEffect(() => {
+    const fetchAgeRangeData = async () => {
+      if (!cameraId || !startDate || !endDate) return;
 
-const AgeRangeDistributionChart = () => {
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        const response = await fetch(
+          `http://localhost:8080/api/v1/analytics/age-range-distribution?userId=${userData?.id}&cameraId=${cameraId}&startDate=${startDate}&endDate=${endDate}`
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch age distribution");
+        const data = await response.json();
+        setAgeRangeData(data.data);
+      } catch (error) {
+        console.error("Error fetching age distribution:", error);
+      }
+    };
+
+    fetchAgeRangeData();
+  }, [cameraId, startDate, endDate]);
+
+  // ✅ Custom Tooltip Component
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { ageGroup, total, males, females } = payload[0].payload;
+      return (
+        <div className="bg-gray-900 p-3 rounded-lg shadow-md border border-gray-700 text-gray-300">
+          <h4 className="text-sm font-medium text-blue-400">{ageGroup} Age Group</h4>
+          <p className="text-xs">👥 Total Visitors: <span className="font-bold">{total}</span></p>
+          <p className="text-xs text-blue-400">👨 Males: <span className="font-bold">{males}</span></p>
+          <p className="text-xs text-pink-400">👩 Females: <span className="font-bold">{females}</span></p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <motion.div className="bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-700">
@@ -44,13 +58,7 @@ const AgeRangeDistributionChart = () => {
 
       <div className="h-80">
         <ResponsiveContainer>
-          <RadarChart
-            cx="50%"
-            cy="50%"
-            outerRadius="80%"
-            data={ageRangeData}
-            onClick={(e) => setSelectedAgeGroup(e.activePayload ? e.activePayload[0].payload : null)}
-          >
+          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={ageRangeData}>
             <PolarGrid stroke="#374151" />
             <PolarAngleAxis dataKey="ageGroup" stroke="#9CA3AF" />
             <PolarRadiusAxis angle={30} domain={[0, 600]} stroke="#9CA3AF" />
@@ -60,16 +68,6 @@ const AgeRangeDistributionChart = () => {
           </RadarChart>
         </ResponsiveContainer>
       </div>
-
-      {/* Show Details of Selected Age Group */}
-      {selectedAgeGroup && (
-        <div className="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300">
-          <h3 className="text-lg font-semibold">{selectedAgeGroup.ageGroup} Age Group</h3>
-          <p>👥 Total Visitors: <span className="font-bold">{selectedAgeGroup.total}</span></p>
-          <p>👨 Males: <span className="font-bold text-blue-400">{selectedAgeGroup.males}</span></p>
-          <p>👩 Females: <span className="font-bold text-pink-400">{selectedAgeGroup.females}</span></p>
-        </div>
-      )}
     </motion.div>
   );
 };
