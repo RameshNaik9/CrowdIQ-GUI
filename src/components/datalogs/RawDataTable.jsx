@@ -65,19 +65,32 @@ const RawDataTable = ({ selectedCamera, selectedDateRange, cameraName }) => {
     );
   }, [searchTerm, logs]);
 
-  const handleDownload = () => {
-    const fileName = `${cameraName}_${selectedDateRange}_rawlogs`;
-    const dataToExport = filteredLogs.map((log, index) => ({
-      "Serial No.": index + 1,
-      "Tracking ID": log.tracking_id,
-      "Gender": log.gender,
-      "Age Range": log.age,
-      "Time Spent (s)": log.time_spent,
-      "First Appearance": new Date(log.first_appearance).toLocaleString(),
-      "Last Appearance": new Date(log.last_appearance).toLocaleString(),
-    }));
-    exportToCSV(dataToExport, fileName);
-  };
+const handleDownload = () => {
+  const rawDataStart = localStorage.getItem("rawDataStartDate");
+  const rawDataEnd = localStorage.getItem("rawDataEndDate");
+
+  // Ensure dates are formatted properly
+  const formattedStartDate = rawDataStart ? new Date(rawDataStart).toLocaleDateString() : "unknown_start";
+  const formattedEndDate = rawDataEnd ? new Date(rawDataEnd).toLocaleDateString() : "unknown_end";
+
+  // Ensure camera name is valid
+  const validCameraName = cameraName ? cameraName.replace(/\s+/g, "_") : "unknown_camera";
+
+  const fileName = `${validCameraName}_${formattedStartDate}_${formattedEndDate}_rawlogs.csv`;
+
+  const dataToExport = filteredLogs.map((log, index) => ({
+    "Serial No.": index + 1,
+    "Tracking ID": log.tracking_id,
+    "Gender": log.gender,
+    "Age Range": log.age,
+    "Time Spent (s)": log.time_spent,
+    "First Appearance": new Date(log.first_appearance).toLocaleString(),
+    "Last Appearance": new Date(log.last_appearance).toLocaleString(),
+  }));
+
+  exportToCSV(dataToExport, fileName);
+};
+
 
   return (
     <motion.div

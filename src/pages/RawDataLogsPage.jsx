@@ -24,7 +24,7 @@ const RawDataLogsPage = () => {
       endDate: new Date(localStorage.getItem("rawDataEndDate") || new Date()),
       key: "selection",
     },
-  ],pendingCustomDate);
+  ], pendingCustomDate);
 
   // ✅ Fetch all cameras from API & store in localStorage
   useEffect(() => {
@@ -75,30 +75,40 @@ const RawDataLogsPage = () => {
     localStorage.setItem("rawDataSelectedCamera", selectedCamera);
   }, [selectedCamera]);
 
-  // ✅ Handle date range updates dynamically
+  // ✅ Handle date range updates dynamically and store in localStorage
   useEffect(() => {
+    let startDate = new Date();
+    let endDate = new Date();
+
     if (selectedDateRange === "Last 7 Days") {
-      const startDate = new Date();
       startDate.setDate(startDate.getDate() - 7);
-      setDateRange([{ startDate, endDate: new Date(), key: "selection" }]);
     } else if (selectedDateRange === "Last 30 Days") {
-      const startDate = new Date();
       startDate.setDate(startDate.getDate() - 30);
-      setDateRange([{ startDate, endDate: new Date(), key: "selection" }]);
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    if (selectedDateRange !== "Custom") {
+      setDateRange([{ startDate, endDate, key: "selection" }]);
+      localStorage.setItem("rawDataStartDate", startDate.toISOString());
+      localStorage.setItem("rawDataEndDate", endDate.toISOString());
     }
   }, [selectedDateRange]);
 
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
-    setSelectedDateRange(formattedDateRange);
+
+    setSelectedDateRange("Custom");
     setCustomDateLabel(formattedDateRange);
     setShowDatePicker(false);
     setPendingCustomDate(false);
 
-    localStorage.setItem("rawDataSelectedDateRange", formattedDateRange);
+    // ✅ Store Custom Date Range in LocalStorage
+    localStorage.setItem("rawDataSelectedDateRange", "Custom");
     localStorage.setItem("rawDataCustomDateLabel", formattedDateRange);
-    localStorage.setItem("rawDataStartDate", dateRange[0].startDate);
-    localStorage.setItem("rawDataEndDate", dateRange[0].endDate);
+    localStorage.setItem("rawDataStartDate", dateRange[0].startDate.toISOString());
+    localStorage.setItem("rawDataEndDate", dateRange[0].endDate.toISOString());
   };
 
   return (
