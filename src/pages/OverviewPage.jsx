@@ -220,7 +220,7 @@ const OverviewPage = () => {
             >
               {cameras.map((camera) => (
                 <option key={camera._id} value={camera._id}>
-                  {camera.name} {camera.status === "online" ? "🟢" : "🔴"}
+                  {camera.name} {camera.status === "online" ? "🟢" : ""}
                 </option>
               ))}
             </select>
