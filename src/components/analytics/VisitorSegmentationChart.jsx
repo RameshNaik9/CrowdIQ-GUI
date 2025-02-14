@@ -4,6 +4,30 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 const COLORS = ["#10B981", "#F59E0B"];
 
+// ✅ Custom Tooltip for Better UX
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        className="p-3 rounded-md shadow-lg"
+        style={{
+          backgroundColor: "rgba(31, 41, 55, 0.9)", // Dark theme background
+          borderColor: "rgba(75, 85, 99, 0.8)", // Subtle border
+          color: "#E5E7EB",
+        }}
+      >
+        <p className="text-sm font-semibold">{payload[0].payload.name}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="text-sm font-medium" style={{ color: entry.color }}>
+            👥 {entry.name}: <span className="font-bold">{entry.value}</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const VisitorSegmentationChart = ({ selectedCamera, selectedDateRange }) => {
   const [visitorData, setVisitorData] = useState([]);
 
@@ -57,7 +81,7 @@ const VisitorSegmentationChart = ({ selectedCamera, selectedDateRange }) => {
             <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
             <XAxis dataKey="name" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar dataKey="count" fill="#8884d8">
               {visitorData.map((entry, index) => (
