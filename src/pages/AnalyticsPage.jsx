@@ -3,7 +3,7 @@ import Header from "../components/common/Header";
 import OverviewCards from "../components/analytics/OverviewCards";
 import VisitorTrendChart from "../components/analytics/VisitorTrendChart";
 import AvgVisitorsByGenderChart from "../components/analytics/AvgVisitorsByGenderChart";
-import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
+// import EntryExitFlowChart from "../components/analytics/EntryExitFlowChart";
 import VisitorSegmentationChart from "../components/analytics/VisitorSegmentationChart";
 import DwellTimeRetentionChart from "../components/analytics/DwellTimeRetentionChart";
 import AgeRangeDistributionChart from "../components/analytics/AgeRangeDistributionChart";
@@ -30,7 +30,7 @@ const AnalyticsPage = () => {
       endDate: new Date(),
       key: "selection",
     },
-  ]);
+  ],pendingCustomDate);
 
   // ✅ Fetch cameras from API and store in localStorage
   useEffect(() => {
