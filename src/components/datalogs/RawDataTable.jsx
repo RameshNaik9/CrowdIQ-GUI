@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Search, Download } from "lucide-react";
 import { exportToCSV } from "../../utils/exportUtils";
 
-const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
+const RawDataTable = ({ selectedCamera, selectedDateRange, cameraName }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
@@ -66,8 +66,17 @@ const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
   }, [searchTerm, logs]);
 
   const handleDownload = () => {
-    const fileName = `${selectedCamera}_${selectedDateRange}_rawlogs`;
-    exportToCSV(filteredLogs, fileName);
+    const fileName = `${cameraName}_${selectedDateRange}_rawlogs`;
+    const dataToExport = filteredLogs.map((log, index) => ({
+      "Serial No.": index + 1,
+      "Tracking ID": log.tracking_id,
+      "Gender": log.gender,
+      "Age Range": log.age,
+      "Time Spent (s)": log.time_spent,
+      "First Appearance": new Date(log.first_appearance).toLocaleString(),
+      "Last Appearance": new Date(log.last_appearance).toLocaleString(),
+    }));
+    exportToCSV(dataToExport, fileName);
   };
 
   return (

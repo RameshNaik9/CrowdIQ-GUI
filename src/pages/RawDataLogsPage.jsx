@@ -90,12 +90,12 @@ const RawDataLogsPage = () => {
 
   const applyCustomDate = () => {
     const formattedDateRange = `${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`;
-    setSelectedDateRange("Custom");
+    setSelectedDateRange(formattedDateRange);
     setCustomDateLabel(formattedDateRange);
     setShowDatePicker(false);
     setPendingCustomDate(false);
 
-    localStorage.setItem("rawDataSelectedDateRange", "Custom");
+    localStorage.setItem("rawDataSelectedDateRange", formattedDateRange);
     localStorage.setItem("rawDataCustomDateLabel", formattedDateRange);
     localStorage.setItem("rawDataStartDate", dateRange[0].startDate);
     localStorage.setItem("rawDataEndDate", dateRange[0].endDate);
@@ -185,7 +185,7 @@ const RawDataLogsPage = () => {
         </div>
 
         {/* Raw Data Table */}
-        <RawDataTable selectedCamera={selectedCamera} selectedDateRange={selectedDateRange} />
+        <RawDataTable selectedCamera={selectedCamera} selectedDateRange={selectedDateRange} cameraName={cameras.find(cam => cam._id === selectedCamera)?.name || ''} />
       </main>
     </div>
   );
