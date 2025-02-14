@@ -1,20 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
-import io from "socket.io-client"; // ✅ Import WebSocket Client
 
-const socket = io("http://localhost:8080"); // ✅ Connect to WebSocket Server
-
-const RawDataTable = () => {
+const RawDataTable = ({ selectedCamera, selectedDateRange }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
-  const [selectedDateRange, setSelectedDateRange] = useState(
-    () => localStorage.getItem("rawLogsSelectedDateRange") || "Today"
-  );
-  const [selectedCamera, setSelectedCamera] = useState(
-    () => localStorage.getItem("rawLogsSelectedCamera") || null
-  );
 
   // ✅ Function to Fetch Logs from API
   const fetchLogs = async () => {
@@ -22,14 +13,16 @@ const RawDataTable = () => {
 
     let startDate = new Date();
     let endDate = new Date();
+    const userData = JSON.parse(localStorage.getItem("user"));
+
 
     if (selectedDateRange === "Last 7 Days") {
       startDate.setDate(startDate.getDate() - 7);
     } else if (selectedDateRange === "Last 30 Days") {
       startDate.setDate(startDate.getDate() - 30);
     } else if (selectedDateRange === "Custom") {
-      startDate = new Date(localStorage.getItem("rawLogsStartDate"));
-      endDate = new Date(localStorage.getItem("rawLogsEndDate"));
+      startDate = new Date(localStorage.getItem("rawDataStartDate"));
+      endDate = new Date(localStorage.getItem("rawDataEndDate"));
     }
 
     startDate.setHours(0, 0, 0, 0);
@@ -37,12 +30,12 @@ const RawDataTable = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/rawlogs?userId=${localStorage.getItem("user_id")}&cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `http://localhost:8080/api/v1/rawlogs?userId=${userData?.id}&cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
       );
 
       if (!response.ok) throw new Error("Failed to fetch logs");
       const data = await response.json();
-      setLogs(data.data);
+      setLogs(data.data.flatMap(entry => entry.logs)); // ✅ Flatten the logs array
     } catch (error) {
       console.error("Error fetching logs:", error);
     }
@@ -52,15 +45,6 @@ const RawDataTable = () => {
   useEffect(() => {
     fetchLogs();
   }, [selectedCamera, selectedDateRange]);
-
-  // ✅ Listen for real-time log updates (only for today's logs)
-  useEffect(() => {
-    if (selectedDateRange === "Today") {
-      socket.on("newLog", (updatedLogs) => {
-        setLogs(updatedLogs);
-      });
-    }
-  }, [selectedDateRange]);
 
   // ✅ Filter logs based on search term
   useEffect(() => {
