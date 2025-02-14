@@ -1,29 +1,78 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
+import io from "socket.io-client"; // ✅ Import WebSocket Client
 
-// ✅ Mock Data (Replace with API response in the future)
-const mockData = [
-  { serial_number: 1, tracking_id: 1, gender: "Male", age: "36-50", time_spent: 8.1, first_appearance: "2025-01-11 15:31:39", last_appearance: "2025-01-11 15:31:47" },
-  { serial_number: 2, tracking_id: 2, gender: "Male", age: "36-50", time_spent: 8.1, first_appearance: "2025-01-11 15:31:39", last_appearance: "2025-01-11 15:31:47" },
-  { serial_number: 3, tracking_id: 7, gender: "Male", age: "36-50", time_spent: 7.0, first_appearance: "2025-01-11 15:31:52", last_appearance: "2025-01-11 15:31:59" },
-  { serial_number: 4, tracking_id: 10, gender: "Female", age: "26-35", time_spent: 5.4, first_appearance: "2025-01-11 15:32:10", last_appearance: "2025-01-11 15:32:15" },
-];
+const socket = io("http://localhost:8080"); // ✅ Connect to WebSocket Server
 
 const RawDataTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(mockData);
+  const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    () => localStorage.getItem("rawLogsSelectedDateRange") || "Today"
+  );
+  const [selectedCamera, setSelectedCamera] = useState(
+    () => localStorage.getItem("rawLogsSelectedCamera") || null
+  );
 
+  // ✅ Function to Fetch Logs from API
+  const fetchLogs = async () => {
+    if (!selectedCamera) return;
+
+    let startDate = new Date();
+    let endDate = new Date();
+
+    if (selectedDateRange === "Last 7 Days") {
+      startDate.setDate(startDate.getDate() - 7);
+    } else if (selectedDateRange === "Last 30 Days") {
+      startDate.setDate(startDate.getDate() - 30);
+    } else if (selectedDateRange === "Custom") {
+      startDate = new Date(localStorage.getItem("rawLogsStartDate"));
+      endDate = new Date(localStorage.getItem("rawLogsEndDate"));
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/rawlogs?userId=${localStorage.getItem("user_id")}&cameraId=${selectedCamera}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch logs");
+      const data = await response.json();
+      setLogs(data.data);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+    }
+  };
+
+  // ✅ Fetch logs when camera or date range changes
   useEffect(() => {
-    setFilteredData(
-      mockData.filter(
+    fetchLogs();
+  }, [selectedCamera, selectedDateRange]);
+
+  // ✅ Listen for real-time log updates (only for today's logs)
+  useEffect(() => {
+    if (selectedDateRange === "Today") {
+      socket.on("newLog", (updatedLogs) => {
+        setLogs(updatedLogs);
+      });
+    }
+  }, [selectedDateRange]);
+
+  // ✅ Filter logs based on search term
+  useEffect(() => {
+    setFilteredLogs(
+      logs.filter(
         (entry) =>
           entry.tracking_id.toString().includes(searchTerm) ||
           entry.gender.toLowerCase().includes(searchTerm.toLowerCase()) ||
           entry.age.includes(searchTerm)
       )
     );
-  }, [searchTerm]);
+  }, [searchTerm, logs]);
 
   return (
     <motion.div
@@ -32,6 +81,7 @@ const RawDataTable = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
+      {/* Header with Search */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-100">Tracking Data</h2>
         <div className="relative">
@@ -46,30 +96,59 @@ const RawDataTable = () => {
         </div>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
           <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Serial No.</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tracking ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Gender</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Age Range</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time Spent (s)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">First Appearance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Last Appearance</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Serial No.
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Tracking ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Gender
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Age Range
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Time Spent (s)
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                First Appearance
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Last Appearance
+              </th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-700">
-            {filteredData.map((entry) => (
-              <motion.tr key={entry.serial_number} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">{entry.serial_number}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">{entry.tracking_id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{entry.gender}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{entry.age}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{entry.time_spent}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{entry.first_appearance}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{entry.last_appearance}</td>
+            {filteredLogs.map((entry, index) => (
+              <motion.tr key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">
+                  {entry.tracking_id}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {entry.gender}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {entry.age}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {entry.time_spent}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {entry.first_appearance}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {entry.last_appearance}
+                </td>
               </motion.tr>
             ))}
           </tbody>
