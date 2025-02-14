@@ -148,7 +148,6 @@
 // };
 
 // export default LiveMonitoringPage;
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"; // 🚀 Warning Icon
@@ -246,7 +245,10 @@ const LiveMonitoringPage = () => {
                       loop
                       muted
                       className="w-full h-96 rounded-lg shadow-lg"
-                      controls
+                      // controls
+                      controlsList="nodownload nofullscreen noremoteplayback"
+                      disablePictureInPicture
+                      onContextMenu={(e) => e.preventDefault()}
                     />
                   ) : (
                     <video
@@ -255,7 +257,10 @@ const LiveMonitoringPage = () => {
                       loop
                       muted
                       className="w-full h-96 rounded-lg shadow-lg"
-                      controls
+                      // controls
+                      controlsList="nodownload nofullscreen noremoteplayback"
+                      disablePictureInPicture
+                      onContextMenu={(e) => e.preventDefault()}
                     />
                   )}
                 </div>
