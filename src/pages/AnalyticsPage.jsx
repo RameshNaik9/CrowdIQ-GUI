@@ -215,9 +215,9 @@ const AnalyticsPage = () => {
           {/* <DwellTimeRetentionChart /> */}
           {/* <AgeRangeDistributionChart /> */}
           <DwellTimeRetentionChart 
-  selectedCamera={selectedCamera} 
-  selectedDateRange={selectedDateRange} 
-/>
+            selectedCamera={selectedCamera} 
+            selectedDateRange={selectedDateRange} 
+          />
 
           <AgeRangeDistributionChart 
             cameraId={selectedCamera} 
