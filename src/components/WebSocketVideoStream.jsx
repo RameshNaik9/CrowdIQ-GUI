@@ -109,9 +109,6 @@ const WebSocketVideoStream = ({ cameraId }) => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h2 className="text-xl font-semibold text-gray-100 mb-4">
-        Live Processed Video Stream
-      </h2>
       {connected ? (
         <p className="text-green-400 mb-2">Status: Connected</p>
       ) : (
