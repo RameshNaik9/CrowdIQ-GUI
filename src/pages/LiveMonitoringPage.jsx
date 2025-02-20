@@ -193,7 +193,8 @@ const handleStopInference = async () => {
                       autoPlay
                       loop
                       muted
-                      className="w-full h-96 rounded-lg shadow-lg"
+                    //   className="w-full h-96 rounded-lg shadow-lg"
+                      className="w-full h-auto aspect-video rounded-lg shadow-lg"
                       controlsList="nodownload nofullscreen noremoteplayback"
                       disablePictureInPicture
                       onContextMenu={(e) => e.preventDefault()}
@@ -208,7 +209,8 @@ const handleStopInference = async () => {
                             autoPlay
                             loop
                             muted
-                            className="w-full h-96 rounded-lg shadow-lg"
+                            // className="w-full h-96 rounded-lg shadow-lg"
+                            className="w-full h-auto aspect-video rounded-lg shadow-lg"
                             controlsList="nodownload nofullscreen noremoteplayback"
                             disablePictureInPicture
                             onContextMenu={(e) => e.preventDefault()}
