@@ -4,13 +4,30 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"; // 🚀 W
 import Header from "../components/common/Header";
 import "@fontsource/orbitron";
 import { Switch } from "@headlessui/react"; // ✅ Web3-style toggle switch
+import WebSocketVideoStream from "../components/WebSocketVideoStream"; // POC WebSocket component
 
+/**
+ * LiveMonitoringPage Component
+ * 
+ * Displays the live monitoring UI. It shows either a static demo video or a live
+ * processed video stream (using a WebSocket) based on the current mode.
+ * In processed mode, a button allows the user to start inference.
+ */
 const LiveMonitoringPage = () => {
-  const [videoMode, setVideoMode] = useState("live"); // "live" or "processed"
+  // Toggle between "live" (demo live video) and "processed" (live processed video stream)
+  const [videoMode, setVideoMode] = useState("live");
   const [cameraData, setCameraData] = useState(null);
+
+  // Inference state management for processed video stream
+  const [inferenceStarted, setInferenceStarted] = useState(false);
+  const [inferenceMessage, setInferenceMessage] = useState("");
+  const [inferenceError, setInferenceError] = useState("");
+  const [isInferenceLoading, setIsInferenceLoading] = useState(false);
+
   const { cameraId } = useParams();
   const navigate = useNavigate();
 
+  // Retrieve active camera details from localStorage
   useEffect(() => {
     const storedCamera = localStorage.getItem("activeCamera");
 
@@ -30,10 +47,69 @@ const LiveMonitoringPage = () => {
       setCameraData(null);
     }
 
+    // Redirect if no camera is found
     if (!storedCamera && location.pathname !== "/live-monitoring") {
       navigate("/live-monitoring");
     }
   }, [cameraId, navigate]);
+
+  // Check for any existing inference state in localStorage
+  useEffect(() => {
+    if (cameraId) {
+      const storedInferenceState = localStorage.getItem(`inference_${cameraId}`);
+      if (storedInferenceState === "started") {
+        setInferenceStarted(true);
+      }
+    }
+  }, [cameraId]);
+
+  /**
+   * handleStartInference
+   * 
+   * Starts the live processed stream by calling the backend API. On success,
+   * updates the inference state and persists it in localStorage.
+   */
+  const handleStartInference = async () => {
+    if (!cameraData) {
+      setInferenceError("Camera data is not available.");
+      return;
+    }
+
+    setIsInferenceLoading(true);
+    setInferenceMessage("");
+    setInferenceError("");
+
+    try {
+      const payload = {
+        camera_id: cameraData._id,
+        rtsp_url: cameraData.stream_link, // Adjust this property as per your cameraData structure
+      };
+
+      const response = await fetch("http://localhost:8000/start-inference", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || "Failed to start inference.");
+      }
+
+      const data = await response.json();
+      console.log("Inference started successfully:", data);
+      setInferenceMessage(data.message || "Inference started successfully.");
+      setInferenceStarted(true);
+      localStorage.setItem(`inference_${cameraId}`, "started");
+    } catch (err) {
+      console.error("Error starting inference:", err.message);
+      setInferenceError(err.message);
+    } finally {
+      setIsInferenceLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
@@ -41,7 +117,7 @@ const LiveMonitoringPage = () => {
       <Header title="Live Monitoring" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8 relative">
-        {/* 🔴 If No Active Camera, Show Full Page Overlay */}
+        {/* Overlay when no active camera is available */}
         {!cameraData ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 backdrop-blur-md text-white rounded-lg z-50">
             <ExclamationTriangleIcon className="h-20 w-20 text-yellow-400 mb-6" />
@@ -58,7 +134,7 @@ const LiveMonitoringPage = () => {
           </div>
         ) : (
           <>
-            {/* Web3 Toggle Button */}
+            {/* Toggle switch between Live Video and Processed Video */}
             <div className="flex justify-center items-center gap-4 mb-6">
               <span className="text-gray-400 text-lg font-medium">Live Video</span>
               <Switch
@@ -80,43 +156,66 @@ const LiveMonitoringPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left: Video Player (Only One Video at a Time) */}
+              {/* Left Panel: Video Player */}
               <div className="lg:col-span-2 bg-gray-900 p-4 rounded-lg shadow-md relative">
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">
                   {videoMode === "live" ? "Live Camera Stream" : "Processed Video Stream"}
                 </h2>
 
-                {/* Video container with relative positioning */}
                 <div className="relative">
                   {videoMode === "live" ? (
+                    // Demo live video (static file) for live mode remains unchanged
                     <video
                       src="/live-video.mp4"
                       autoPlay
                       loop
                       muted
                       className="w-full h-96 rounded-lg shadow-lg"
-                      // controls
                       controlsList="nodownload nofullscreen noremoteplayback"
                       disablePictureInPicture
                       onContextMenu={(e) => e.preventDefault()}
                     />
                   ) : (
-                    <video
-                      src={cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
-                      autoPlay
-                      loop
-                      muted
-                      className="w-full h-96 rounded-lg shadow-lg"
-                      // controls
-                      controlsList="nodownload nofullscreen noremoteplayback"
-                      disablePictureInPicture
-                      onContextMenu={(e) => e.preventDefault()}
-                    />
+                    <>
+                      {/* For processed video mode, show either the demo video with a start button or the live WebSocket stream */}
+                      {!inferenceStarted ? (
+                        <>
+                          <video
+                            src={cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
+                            autoPlay
+                            loop
+                            muted
+                            className="w-full h-96 rounded-lg shadow-lg"
+                            controlsList="nodownload nofullscreen noremoteplayback"
+                            disablePictureInPicture
+                            onContextMenu={(e) => e.preventDefault()}
+                          />
+                          <div className="mt-4 text-center">
+                            <button
+                              onClick={handleStartInference}
+                              disabled={isInferenceLoading}
+                              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+                            >
+                              {isInferenceLoading ? "Starting Inference..." : "Start Inference"}
+                            </button>
+                          </div>
+                          {inferenceMessage && (
+                            <p className="text-green-400 mt-2 text-center">{inferenceMessage}</p>
+                          )}
+                          {inferenceError && (
+                            <p className="text-red-400 mt-2 text-center">{inferenceError}</p>
+                          )}
+                        </>
+                      ) : (
+                        // When inference is active, render the WebSocket-based processed video stream
+                        <WebSocketVideoStream cameraId={cameraId} />
+                      )}
+                    </>
                   )}
                 </div>
               </div>
 
-              {/* Right: Camera Details */}
+              {/* Right Panel: Camera Details */}
               <div className="bg-gray-800 p-4 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">Camera Details</h2>
                 <ul className="space-y-2 text-gray-300 font-orbitron text-lg tracking-wider">
