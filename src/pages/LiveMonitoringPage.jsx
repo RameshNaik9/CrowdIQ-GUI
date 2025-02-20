@@ -199,37 +199,49 @@ const LiveMonitoringPage = () => {
    * 
    * Stops the live processed stream by calling the backend API.
    */
-  const handleStopInference = async () => {
-    if (!cameraData) {
-      setInferenceError("Camera data is not available.");
-      return;
-    }
-    setIsInferenceLoading(true);
-    setInferenceMessage("");
-    setInferenceError("");
-    try {
-      const payload = { camera_id: cameraData._id };
-      const response = await fetch("http://localhost:8000/stop-inference", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        const { message } = await response.json();
-        throw new Error(message || "Failed to stop inference.");
+const handleStopInference = async () => {
+  if (!cameraData) {
+    setInferenceError("Camera data is not available.");
+    return;
+  }
+  setIsInferenceLoading(true);
+  setInferenceMessage("");
+  setInferenceError("");
+  try {
+    const payload = { camera_id: cameraData._id };
+    const response = await fetch("http://localhost:8000/stop-inference", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      // If the error indicates no active inference, then update state accordingly.
+      const errorData = await response.json();
+      if (
+        errorData.detail &&
+        errorData.detail.includes("No active inference running")
+      ) {
+        // Update the state to reflect that no inference is active.
+        setInferenceMessage("Inference was not running. Ready to start.");
+        setInferenceStarted(false);
+        localStorage.removeItem(`inference_${cameraId}`);
+      } else {
+        throw new Error(errorData.message || "Failed to stop inference.");
       }
+    } else {
       const data = await response.json();
       console.log("Inference stopped successfully:", data);
       setInferenceMessage(data.message || "Inference stopped successfully.");
       setInferenceStarted(false);
       localStorage.removeItem(`inference_${cameraId}`);
-    } catch (err) {
-      console.error("Error stopping inference:", err.message);
-      setInferenceError(err.message);
-    } finally {
-      setIsInferenceLoading(false);
     }
-  };
+  } catch (err) {
+    console.error("Error stopping inference:", err.message);
+    setInferenceError(err.message);
+  } finally {
+    setIsInferenceLoading(false);
+  }
+};
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
