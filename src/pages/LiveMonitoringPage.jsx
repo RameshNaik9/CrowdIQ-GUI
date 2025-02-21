@@ -600,37 +600,73 @@ const LiveMonitoringPage = () => {
               {/* 4) Camera Details Panel */}
               <div className="bg-gray-800 p-4 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">Camera Details</h2>
-                <ul className="space-y-2 text-gray-300 font-orbitron text-lg tracking-wider">
-                  <li>
-                    <strong>Name:</strong> {cameraData?.name}
-                  </li>
-                  <li>
-                    <strong>Location:</strong> {cameraData?.location}
-                  </li>
-                  <li>
-                    <strong>IP Address:</strong> {cameraData?.ip_address}
-                  </li>
-                  <li>
-                    <strong>Port:</strong> {cameraData?.port}
-                  </li>
-                  <li>
-                    <strong>Channel:</strong> {cameraData?.channel_number}
-                  </li>
-                  <li>
-                    <strong>Stream Type:</strong> {cameraData?.stream_type}
-                  </li>
-                  <li>
-                    <strong>Last Active:</strong>{" "}
-                    {cameraData?.last_active
-                      ? new Date(cameraData.last_active).toLocaleString("en-US", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                          hour12: true,
-                        })
-                      : "N/A"}
-                  </li>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left text-gray-300 font-orbitron">
+                    <tbody>
+                      {/* Name */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Name</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.name || "N/A"}
+                        </td>
+                      </tr>
+                      
+                      {/* Location */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Location</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.location || "N/A"}
+                        </td>
+                      </tr>
+                      
+                      {/* IP Address */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">IP Address</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.ip_address || "N/A"}
+                        </td>
+                      </tr>
 
-                </ul>
+                      {/* Port */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Port</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.port || "N/A"}
+                        </td>
+                      </tr>
+
+                      {/* Channel */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Channel</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.channel_number || "N/A"}
+                        </td>
+                      </tr>
+
+                      {/* Stream Type */}
+                      <tr className="border-b border-gray-700">
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Stream Type</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.stream_type || "N/A"}
+                        </td>
+                      </tr>
+
+                      {/* Last Active */}
+                      <tr>
+                        <th className="py-2 px-3 text-gray-200 font-medium whitespace-nowrap">Last Active</th>
+                        <td className="py-2 px-3">
+                          {cameraData?.last_active
+                            ? new Date(cameraData.last_active).toLocaleString("en-US", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                                hour12: true,
+                              })
+                            : "N/A"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </>
