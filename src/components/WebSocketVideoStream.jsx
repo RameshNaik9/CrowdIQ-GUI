@@ -124,36 +124,35 @@
 // };
 
 // export default WebSocketVideoStream;
-
 /**
  * File: src/components/WebSocketVideoStream.jsx
- * Description: A component that displays the live WebSocket video stream
- * using the *already established* WebSocket from CameraConnectionContext.
- *
- * It:
- *  - Listens to ws.onmessage for JPEG frames
- *  - Renders them into an <img> tag
- *  - Manages blob URLs to avoid memory leaks
- *
- * NOTE: We removed local reconnection or ping logic because the global
- *       context now manages the persistent socket.
+ * Description: Only polls the backend if we haven't received frames for > 3 seconds,
+ * to verify if inference ended unexpectedly.
  */
 
 import { useEffect, useRef, useState, useContext } from "react";
 import { CameraConnectionContext } from "../context/CameraConnectionContext";
 
+const FRAME_TIMEOUT_MS = 3000; // 3 seconds threshold
 /**
  * WebSocketVideoStream Component
  *
  * @param {string} cameraId - Unique identifier for the camera stream (optional usage).
  *                            We rely on the context's `ws` but keep cameraId for labeling/logging.
  */
-const WebSocketVideoStream = ({ cameraId }) => {
+const WebSocketVideoStream = ({ cameraId, onInferenceStopped }) => {
+  // `onInferenceStopped` is a callback to inform parent that inference is no longer active
   const { ws, connected, error } = useContext(CameraConnectionContext);
 
   const [status, setStatus] = useState("Disconnected");
   const imgRef = useRef(null);
   const previousUrlRef = useRef(null);
+
+  // Keep track of the last time we received a frame
+  const lastFrameTimeRef = useRef(null);
+
+  // We'll store an interval ID for the "frame timeout" check
+  const timeoutCheckRef = useRef(null);
 
   useEffect(() => {
     // Update status based on context
@@ -161,27 +160,31 @@ const WebSocketVideoStream = ({ cameraId }) => {
       setStatus(error || "No WebSocket instance");
       return;
     }
-
-    if (connected) {
-      setStatus("Connected");
-    } else {
-      setStatus(error || "Disconnected");
-    }
+    setStatus(connected ? "Connected" : error || "Disconnected");
   }, [connected, error, ws]);
 
   useEffect(() => {
     // If we have a ws instance, set up an onmessage handler for frames
     if (!ws) return;
 
-    const handleMessage = (event) => {
-      // We expect binary frames (JPEG). If the server sends text, you can handle that separately
+    // Handler for incoming messages
+    const handleMessage = async (event) => {
       if (typeof event.data === "string") {
-        // Possibly a text message from the server
+        // Possibly a text message (like "inference_stopped")
         console.log("Text message from server:", event.data);
+        if (event.data === "inference_stopped") {
+          // The server says it's definitely stopped
+          if (onInferenceStopped) {
+            onInferenceStopped();
+          }
+        }
         return;
       }
 
-      // Assume binary data => construct blob -> objectURL -> <img src=...>
+      // It's a binary frame => update the last frame time
+      lastFrameTimeRef.current = Date.now();
+
+      // Create blob URL for <img>
       const blob = new Blob([event.data], { type: "image/jpeg" });
       const url = URL.createObjectURL(blob);
 
@@ -199,18 +202,63 @@ const WebSocketVideoStream = ({ cameraId }) => {
 
     ws.addEventListener("message", handleMessage);
 
-    // Cleanup on unmount
+    // Initialize lastFrameTime to "now" to avoid immediate false detection
+    lastFrameTimeRef.current = Date.now();
+
+    // Start or re-start the interval to check for frame timeouts
+    if (!timeoutCheckRef.current) {
+      timeoutCheckRef.current = setInterval(async () => {
+        // If the socket is connected and we haven't received a frame for X seconds,
+        // check inference status to see if it's really ended or just a slow network
+        if (connected && lastFrameTimeRef.current !== null) {
+          const elapsed = Date.now() - lastFrameTimeRef.current;
+          if (elapsed > FRAME_TIMEOUT_MS) {
+            console.warn("No frames received for > 3s, checking if inference ended...");
+            try {
+              const res = await fetch(`http://localhost:8000/inference-status?camera_id=${cameraId}`);
+              if (res.ok) {
+                const data = await res.json();
+                if (!data.active) {
+                  // The server says it's not active
+                  console.warn("Server reports inference is inactive.");
+                  if (onInferenceStopped) {
+                    onInferenceStopped();
+                  }
+                } else {
+                  console.warn("Server says inference is still active. Possibly a slow frame or camera glitch.");
+                }
+              }
+            } catch (err) {
+              console.error("Error checking inference status:", err);
+            } finally {
+              // Reset lastFrameTime so we won't spam-check. If no new frames come in, we'll check again in 3s.
+              lastFrameTimeRef.current = Date.now();
+            }
+          }
+        }
+      }, 3000); // check every 3s
+    }
+
     return () => {
       ws.removeEventListener("message", handleMessage);
       if (previousUrlRef.current) {
         URL.revokeObjectURL(previousUrlRef.current);
       }
     };
-  }, [ws]);
+  }, [ws, cameraId, connected, onInferenceStopped]);
+
+  // Cleanup the interval when unmounting
+  useEffect(() => {
+    return () => {
+      if (timeoutCheckRef.current) {
+        clearInterval(timeoutCheckRef.current);
+        timeoutCheckRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div style={{ textAlign: "center" }}>
-      {/* Status line (same styling) */}
       {connected ? (
         <p className="text-green-400 mb-2">Status: {status}</p>
       ) : (

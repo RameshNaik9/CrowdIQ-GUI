@@ -284,13 +284,13 @@
 // };
 
 // export default LiveMonitoringPage;
-
 /**
  * File: src/pages/LiveMonitoringPage.jsx
- * Description: Live Monitoring UI that toggles between a local demo ("Live Video")
- * and a server-processed stream ("Processed Video"). Integrates with the
- * CameraConnectionContext to ensure the WebSocket is established before
- * allowing Start/Stop Inference.
+ * Description: 
+ *  - Provides Live vs. Processed (inference) video toggle.
+ *  - Calls the backend to start/stop inference.
+ *  - Integrates with WebSocketVideoStream, which does on-demand polling if frames stop.
+ *  - If the stream truly ends, we handle it by resetting our UI state to "Start Inference."
  */
 
 import { useState, useEffect, useContext } from "react";
@@ -347,13 +347,12 @@ const LiveMonitoringPage = () => {
     }
   }, [cameraId, navigate]);
 
-  // Check for any existing inference state in localStorage
+  // Check if we previously started inference for this camera
   useEffect(() => {
-    if (cameraId) {
-      const storedInferenceState = localStorage.getItem(`inference_${cameraId}`);
-      if (storedInferenceState === "started") {
-        setInferenceStarted(true);
-      }
+    if (!cameraId) return;
+    const storedInferenceState = localStorage.getItem(`inference_${cameraId}`);
+    if (storedInferenceState === "started") {
+      setInferenceStarted(true);
     }
   }, [cameraId]);
 
@@ -386,7 +385,7 @@ const LiveMonitoringPage = () => {
         throw new Error(detail || "Failed to start inference.");
       }
       const data = await response.json();
-      console.log("Inference started successfully:", data);
+      console.log("Inference started:", data);
       setInferenceMessage(data.message || "Inference started successfully.");
       setInferenceStarted(true);
       localStorage.setItem(`inference_${cameraId}`, "started");
@@ -422,6 +421,7 @@ const LiveMonitoringPage = () => {
       if (!response.ok) {
         // If the error indicates no active inference, show appropriate message
         const errorData = await response.json();
+        // If the error indicates no active inference, set our state accordingly
         if (
           errorData.detail &&
           errorData.detail.includes("No active inference running")
@@ -434,7 +434,7 @@ const LiveMonitoringPage = () => {
         }
       } else {
         const data = await response.json();
-        console.log("Inference stopped successfully:", data);
+        console.log("Inference stopped:", data);
         setInferenceMessage(data.message || "Inference stopped successfully.");
         setInferenceStarted(false);
         localStorage.removeItem(`inference_${cameraId}`);
@@ -447,6 +447,19 @@ const LiveMonitoringPage = () => {
     }
   };
 
+  // Handle "inference_stopped" from the child if frames ceased
+  const handleInferenceStopped = () => {
+    console.log("[LiveMonitoringPage] handleInferenceStopped => setting inference to false");
+    setInferenceStarted(false);
+    setInferenceMessage("Inference ended (no frames).");
+    if (cameraId) {
+      localStorage.removeItem(`inference_${cameraId}`);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Rendering
+  // ---------------------------------------------------------------------------
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Live Monitoring" />
@@ -473,7 +486,9 @@ const LiveMonitoringPage = () => {
               <span className="text-gray-400 text-lg font-medium">Live Video</span>
               <Switch
                 checked={videoMode === "processed"}
-                onChange={() => setVideoMode(videoMode === "live" ? "processed" : "live")}
+                onChange={() =>
+                  setVideoMode(videoMode === "live" ? "processed" : "live")
+                }
                 className={`relative inline-flex h-8 w-16 items-center rounded-full transition duration-300 ${
                   videoMode === "processed" ? "bg-blue-600" : "bg-gray-700"
                 }`}
@@ -511,6 +526,7 @@ const LiveMonitoringPage = () => {
                     <>
                       {/* If NOT started inference, show fallback video + start button */}
                       {!inferenceStarted ? (
+                        // Show a placeholder / fallback video until inference is started
                         <>
                           <video
                             src={cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
@@ -548,7 +564,10 @@ const LiveMonitoringPage = () => {
                       ) : (
                         // If Inference is started, show the real-time WebSocket stream
                         <>
-                          <WebSocketVideoStream cameraId={cameraId} />
+                          <WebSocketVideoStream
+                            cameraId={cameraId}
+                            onInferenceStopped={handleInferenceStopped}
+                          />
                           <div className="mt-4 text-center">
                             {/* Show Stop Inference button only if connected */}
                             {connected ? (
