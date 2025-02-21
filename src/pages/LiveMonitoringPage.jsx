@@ -620,8 +620,16 @@ const LiveMonitoringPage = () => {
                     <strong>Stream Type:</strong> {cameraData?.stream_type}
                   </li>
                   <li>
-                    <strong>Last Active:</strong> {cameraData?.last_active}
+                    <strong>Last Active:</strong>{" "}
+                    {cameraData?.last_active
+                      ? new Date(cameraData.last_active).toLocaleString("en-US", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                          hour12: true,
+                        })
+                      : "N/A"}
                   </li>
+
                 </ul>
               </div>
             </div>

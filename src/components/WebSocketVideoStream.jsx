@@ -268,8 +268,9 @@ const WebSocketVideoStream = ({ cameraId, onInferenceStopped }) => {
       <img
         ref={imgRef}
         alt="Live video stream"
-        style={{ width: "80%", border: "1px solid black", borderRadius: "8px" }}
+        className="w-full h-auto aspect-video rounded-lg shadow-lg border border-gray-700"
       />
+
     </div>
   );
 };
