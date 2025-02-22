@@ -371,7 +371,12 @@ const LiveMonitoringPage = () => {
     setInferenceError("");
 
     try {
+    // ✅ Extract userId from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?.id;
+    
       const payload = {
+        user_id: userId,
         camera_id: cameraData._id,
         rtsp_url: cameraData.stream_link,
       };
