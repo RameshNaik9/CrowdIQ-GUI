@@ -32,21 +32,49 @@ const LocalCameraSetup = () => {
   }, []);
 
   // Handle the connect action
-  const handleConnect = () => {
-    // Optionally, build a local camera object and save to localStorage
-    const localCamera = {
-      _id: "local_" + Date.now(),
-      name: "Local Camera",
-      location: "This Device",
-      stream_link: "local", // or a flag to denote it's a local stream
-      type: "local",
-      status: "online",
-      last_active: new Date().toISOString(),
+    const handleConnect = async () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData || !userData.id) {
+        setError("User is not logged in.");
+        return;
+    }
+    // Build the payload for a local camera.
+    const payload = {
+        userId: userData.id,
+        name: "Local Camera",
+        location: "This Device",
+        // For local camera, you might not need username, password, ip_address, port, channel_number, stream_type.
+        // You can pass dummy values or leave them as empty strings as required.
+        username: "",
+        password: "",
+        ip_address: "",
+        port: 554,
+        channel_number: "1",
+        stream_type: "main",
+        type: "local",
+        stream_link: "local",
     };
 
-    localStorage.setItem("activeCamera", JSON.stringify(localCamera));
-    navigate(`/live-monitoring/${localCamera._id}`);
-  };
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+        const { detail } = await response.json();
+        throw new Error(detail || "Failed to connect to the local camera");
+        }
+        const data = await response.json();
+        localStorage.setItem("activeCamera", JSON.stringify(data.data));
+        navigate(`/live-monitoring/${data.data._id}`);
+    } catch (err) {
+        setError(err.message);
+    }
+    };
 
   return (
     <div className="space-y-4">
