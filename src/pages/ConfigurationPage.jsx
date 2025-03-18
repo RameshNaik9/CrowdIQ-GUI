@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { RotateCcw } from "lucide-react"; // ✅ Web3-style Refresh Icon
 import Header from "../components/common/Header";
 import RTSPSetup from "../components/configuration/RTSPSetup";
+import LocalCameraSetup from "../components/configuration/LocalCameraSetup";
 import CameraCard from "../components/configuration/CameraCard";
 
 const cameraTypes = [
+  { id: "local", name: "Local Camera" },
   { id: "rtsp", name: "RTSP" },
   { id: "onvif", name: "ONVIF" },
   { id: "http", name: "HTTP" },
@@ -126,9 +128,9 @@ const ConfigurationPage = () => {
                 key={camera.id}
                 onClick={() => setSelectedCamera(camera.id)}
                 className={`block w-full text-left px-4 py-2 text-white hover:bg-gray-700 transition ${
-                  camera.id !== "rtsp" ? "opacity-50 cursor-not-allowed" : ""
+                  camera.id !== "rtsp" && camera.id !== "local" ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                disabled={camera.id !== "rtsp"}
+                disabled={camera.id !== "rtsp" && camera.id !== "local"}
               >
                 {camera.name}
               </button>
@@ -137,9 +139,36 @@ const ConfigurationPage = () => {
         )}
 
         {/* Selected Camera Connection Component */}
-        {selectedCamera && (
+        {/* {selectedCamera && (
           <div className="mt-6 p-4 bg-gray-900 rounded-lg shadow-md">
             {selectedCamera === "rtsp" && <RTSPSetup />}
+            {selectedCamera === "local" && <LocalCameraSetup />}
+          </div>
+        )} */}
+
+        {/* Modal for Selected Camera Setup */}
+        {selectedCamera && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Modal Backdrop */}
+            <div
+              className="absolute inset-0 bg-black opacity-60"
+              onClick={() => setSelectedCamera(null)}
+            />
+            {/* Modal Content */}
+            <div
+              className={`relative bg-gray-900 p-6 rounded-lg shadow-lg z-10 max-w-4xl w-full ${
+                selectedCamera === "rtsp" ? "h-[600px] overflow-y-auto" : "h-auto"
+              }`}
+            >
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-white"
+                onClick={() => setSelectedCamera(null)}
+              >
+                ✕
+              </button>
+              {selectedCamera === "rtsp" && <RTSPSetup />}
+              {selectedCamera === "local" && <LocalCameraSetup />}
+            </div>
           </div>
         )}
 
