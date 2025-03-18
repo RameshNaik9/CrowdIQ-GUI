@@ -11,9 +11,21 @@ const RawDataLogsPage = () => {
   const [selectedDateRange, setSelectedDateRange] = useState(
     () => localStorage.getItem("rawDataSelectedDateRange") || "Today"
   );
-  const [selectedCamera, setSelectedCamera] = useState(
-    () => localStorage.getItem("rawDataSelectedCamera") || null
-  );
+
+    // Get stored values
+  const storedSelectedCamera = localStorage.getItem("rawDataSelectedCamera");
+  const storedActiveCamera = JSON.parse(localStorage.getItem("activeCamera") || "null");
+
+  // Use active camera _id if storedSelectedCamera is missing or "null"
+  const initialCamera =
+    storedSelectedCamera && storedSelectedCamera !== "null"
+      ? storedSelectedCamera
+      : storedActiveCamera && storedActiveCamera._id
+      ? storedActiveCamera._id
+      : null;
+
+  const [selectedCamera, setSelectedCamera] = useState(initialCamera);
+
   const [cameras, setCameras] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateLabel, setCustomDateLabel] = useState(localStorage.getItem("rawDataCustomDateLabel") || "");
@@ -46,16 +58,13 @@ const RawDataLogsPage = () => {
         setCameras(data.data);
         localStorage.setItem("cameras", JSON.stringify(data.data));
 
-        // ✅ Ensure active camera is selected first, else default to the first camera
-        const activeCamera = data.data.find((cam) => cam.status === "online");
-        const storedCamera = localStorage.getItem("rawDataSelectedCamera");
-
-        if (!storedCamera && activeCamera) {
-          setSelectedCamera(activeCamera._id);
-          localStorage.setItem("rawDataSelectedCamera", activeCamera._id);
-        } else if (!storedCamera && data.data.length > 0) {
-          setSelectedCamera(data.data[0]._id);
-          localStorage.setItem("rawDataSelectedCamera", data.data[0]._id);
+        // If no camera is already selected, use active camera from localStorage
+        if (!storedSelectedCamera || storedSelectedCamera === "null") {
+          const activeCamera = data.data.find((cam) => cam.status === "online") || data.data[0];
+          if (activeCamera) {
+            setSelectedCamera(activeCamera._id);
+            localStorage.setItem("rawDataSelectedCamera", activeCamera._id);
+          }
         }
       } catch (error) {
         console.error("Error fetching cameras:", error);
@@ -64,6 +73,7 @@ const RawDataLogsPage = () => {
 
     fetchCameras();
   }, []);
+
 
   // ✅ Persist selected date range in localStorage
   useEffect(() => {

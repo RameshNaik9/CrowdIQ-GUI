@@ -306,7 +306,9 @@ import { CameraConnectionContext } from "../context/CameraConnectionContext";
 
 const LiveMonitoringPage = () => {
   // Toggle between "live" (demo local video) and "processed" (live processed video)
-  const [videoMode, setVideoMode] = useState("live");
+  // const [videoMode, setVideoMode] = useState("live");
+  const [videoMode] = useState("processed");
+
   const [cameraData, setCameraData] = useState(null);
 
   // Inference state management for processed video stream
@@ -488,8 +490,8 @@ const LiveMonitoringPage = () => {
           <>
             {/* 2) Toggle Switch: Live vs. Processed Video */}
             <div className="flex justify-center items-center gap-4 mb-6">
-              <span className="text-gray-400 text-lg font-medium">Live Video</span>
-              <Switch
+              <span className="opacity-30 text-gray-400 text-lg font-medium">Live Video</span>
+              {/* <Switch
                 checked={videoMode === "processed"}
                 onChange={() =>
                   setVideoMode(videoMode === "live" ? "processed" : "live")
@@ -503,8 +505,16 @@ const LiveMonitoringPage = () => {
                     videoMode === "processed" ? "translate-x-8" : "translate-x-0"
                   }`}
                 />
+              </Switch> */}
+              <Switch
+                checked={true}
+                disabled
+                className="relative inline-flex h-8 w-16 items-center rounded-full transition duration-300 bg-blue-600"
+              >
+                <span className=" opacity-30 absolute left-1 inline-block h-6 w-6 transform rounded-full bg-white transition translate-x-8" />
               </Switch>
-              <span className="text-gray-400 text-lg font-medium">Processed Video</span>
+
+              <span className="text-gray-100 text-lg font-medium">Processed Video</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
