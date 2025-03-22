@@ -36,7 +36,7 @@ const LoginPage = ({ setUser }) => {
         </p>
 
         {/* Same Logo from Home Page */}
-        <div className="relative mt-8 w-48 h-48 overflow-hidden rounded-full z-10">
+        <div className="relative mt-8 w-64 h-64 overflow-hidden rounded-full z-10">
           <img
             src="/Artboard 7-8.png" 
             alt="DevelMo Logo"
@@ -45,28 +45,23 @@ const LoginPage = ({ setUser }) => {
         </div>
       </motion.div>
 
-      {/* Right Section: Login Card */}
+      {/* Right: Login Card */}
       <motion.div
-        className="relative z-10 w-1/2 h-full flex justify-center items-center"
-        initial={{ opacity: 0, x: 90 }}
+        className="w-1/2 flex justify-center items-center z-10"
+        initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1 }}
       >
-        <div
-          className="bg-gray-800 bg-opacity-60 p-8 rounded-lg shadow-xl border border-gray-700 max-w-md mx-auto text-center"
-          style={{ fontFamily: "'Aleo', serif" }}
-        >
-          <h2 className="text-3xl font-bold text-gray-100 mb-4">Welcome Back</h2>
-          <p className="text-gray-400 text-sm mb-6">Sign in to continue</p>
+        <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg shadow-lg text-center border border-gray-700 w-[90%] max-w-md">
+          <h1 className="text-3xl font-bold text-gray-100">Welcome to CrowdIQ</h1>
+          <p className="text-gray-400 text-sm mt-2">Sign in to continue</p>
 
-          {/* Google Sign-In (your custom component) */}
+          {/* Google Sign-In Button (Now moved to a separate component) */}
           <GoogleLogin setUser={setUser} />
 
-          <p className="mt-6 text-sm text-gray-400">
-            Not registered?{" "}
-            <Link to="/" className="text-blue-500 hover:underline">
-              Go to Home
-            </Link>
+          {/* Redirect Link to Home */}
+          <p className="mt-4 text-sm text-gray-400">
+            Not registered? <Link to="/" className="text-blue-500 hover:underline">Go to Home</Link>
           </p>
         </div>
       </motion.div>
