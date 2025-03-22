@@ -527,7 +527,7 @@ const LiveMonitoringPage = () => {
                   {videoMode === "live" ? (
                     // 3a) Local Demo Video
                     <video
-                      src="/live-video.mp4"
+                      // src="/live-video.mp4"
                       autoPlay
                       loop
                       muted
@@ -544,7 +544,7 @@ const LiveMonitoringPage = () => {
                         // Show a placeholder / fallback video until inference is started
                         <>
                           <video
-                            src={cameraData?.processed_stream_link || "/live-processed-fixed.mp4"}
+                            src={cameraData?.processed_stream_link }
                             autoPlay
                             loop
                             muted
