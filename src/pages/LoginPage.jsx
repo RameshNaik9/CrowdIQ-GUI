@@ -36,7 +36,7 @@ const LoginPage = ({ setUser }) => {
         </p>
 
         {/* Same Logo from Home Page */}
-        <div className="relative mt-8 w-64 h-64 overflow-hidden rounded-full z-10">
+        <div className="relative mt-8 w-80 h-80 overflow-hidden rounded-full z-10">
           <img
             src="/Artboard 7-8.png" 
             alt="DevelMo Logo"
