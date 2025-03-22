@@ -24,53 +24,52 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
   }, [camera._id]);
 
   // ✅ Handle Connecting an Existing Camera
-  const handleConnect = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+// Inside handleConnect in CameraCard.jsx
+const handleConnect = async () => {
+  setLoading(true);
+  setError(null);
+  setSuccess(null);
 
-    try {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      if (!userData || !userData.id) {
-        throw new Error("User is not logged in.");
-      }
-
-      const payload = {
-        userId: userData.id, // ✅ Pass user ID
-        cameraId: camera._id, // ✅ Pass Camera ID
-      };
-
-      const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to connect to the camera.");
-      }
-
-      const data = await response.json();
-      localStorage.setItem("activeCamera", JSON.stringify(data.data)); // ✅ Save as Active Camera
-
-      // ✅ Show success message and set camera as active
-      setSuccess("Camera connected successfully!");
-      setIsActive(true);
-
-      // ✅ Redirect after 2 seconds
-      setTimeout(() => {
-        window.location.href = `/live-monitoring/${data.data._id}`;
-      }, 500);
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  try {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData || !userData.id) {
+      throw new Error("User is not logged in.");
     }
-  };
+
+    // Include the camera type from the camera object in the payload.
+    const payload = {
+      userId: userData.id,
+      cameraId: camera._id,
+      type: camera.type,  // "rtsp" or "local"
+    };
+
+    const response = await fetch("http://localhost:8080/api/v1/cameras/connect", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to connect to the camera.");
+    }
+
+    const data = await response.json();
+    localStorage.setItem("activeCamera", JSON.stringify(data.data));
+    setSuccess("Camera connected successfully!");
+    setIsActive(true);
+    setTimeout(() => {
+      window.location.href = `/live-monitoring/${data.data._id}`;
+    }, 500);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ✅ Handle Disconnecting the Camera
   const handleDisconnect = () => {
@@ -93,6 +92,8 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
             <h3 className="text-lg font-semibold text-gray-100">{camera.name}</h3>
             <p className="text-gray-400 text-sm truncate w-48">{camera.location}</p>
             <p className="text-gray-500 text-xs">Last Active: {formattedLastActive}</p>
+            {/* Display camera type */}
+            <p className="text-gray-400 text-xs">Type: {camera.type}</p>
           </div>
           {/* Status Icon */}
           <div className="flex items-center">
@@ -157,12 +158,24 @@ const CameraCard = ({ camera, healthCheckActive, expanded, onToggleExpand }) => 
 
             {/* Camera Details */}
             <h2 className="text-2xl font-semibold text-gray-100 mb-4">{camera.name}</h2>
-            <p className="text-gray-400 mb-1"><strong>Location:</strong> {camera.location}</p> {/* ✅ Full address in modal */}
-            <p className="text-gray-400 mb-1"><strong>IP Address:</strong> {camera.ip_address}</p>
-            <p className="text-gray-400 mb-1"><strong>Port:</strong> {camera.port}</p>
-            <p className="text-gray-400 mb-1"><strong>Channel:</strong> {camera.channel_number}</p>
-            <p className="text-gray-400 mb-1"><strong>Stream Type:</strong> {camera.stream_type}</p>
-            <p className="text-gray-400 mb-4"><strong>Last Active:</strong> {formattedLastActive}</p>
+            <p className="text-gray-400 mb-1">
+              <strong>Location:</strong> {camera.location}
+            </p>
+            <p className="text-gray-400 mb-1">
+              <strong>IP Address:</strong> {camera.ip_address}
+            </p>
+            <p className="text-gray-400 mb-1">
+              <strong>Port:</strong> {camera.port}
+            </p>
+            <p className="text-gray-400 mb-1">
+              <strong>Channel:</strong> {camera.channel_number}
+            </p>
+            <p className="text-gray-400 mb-1">
+              <strong>Stream Type:</strong> {camera.stream_type}
+            </p>
+            <p className="text-gray-400 mb-4">
+              <strong>Last Active:</strong> {formattedLastActive}
+            </p>
 
             {/* Buttons in Expanded View */}
             <div className="flex justify-between">
