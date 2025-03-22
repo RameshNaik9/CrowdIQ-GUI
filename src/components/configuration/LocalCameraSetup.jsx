@@ -150,8 +150,8 @@ const LocalCameraSetup = () => {
       userId: userData.id,
       name: formData.name,
       location: formData.location,
-      username: "",
-      password: "",
+      username: "local",
+      password: "local",
       ip_address: "local",  // dummy value for local camera
       port: 554,
       channel_number: "1",
