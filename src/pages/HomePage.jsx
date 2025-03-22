@@ -76,7 +76,7 @@ const HomePage = () => {
         {/* Logo container with fixed dimensions and cropping */}
         <div className="relative w-48 h-48 overflow-hidden rounded-full z-10">
           <img
-            src="/Artboard 18-8.png"
+            src="/Artboard 18-8-1.png"
             alt="DevelMo Logo"
             className="w-full h-full object-cover"
           />
