@@ -29,7 +29,7 @@ const HomePage = () => {
         </h1>
         {/* Tagline in Aleo */}
         <p
-          className="mt-4 text-gray-400 text-sm sm:text-base md:text-lg tracking-widest"
+          className="mt-4 text-gray-400 text-lg sm:text-xl md:text-2xl tracking-widest"
           style={{ fontFamily: "'Aleo', serif" }}
         >
           See Beyond The Crowd
@@ -66,7 +66,7 @@ const HomePage = () => {
         transition={{ delay: 1, duration: 1, ease: "easeInOut" }}
       >
         <p
-          className="text-gray-500 text-base sm:text-lg italic tracking-wide mb-2"
+          className="text-gray-500 text-base sm:text-lg  tracking-wide mb-2"
           style={{ fontFamily: "'Aleo', serif" }}
         >
           POWERED BY
@@ -76,7 +76,7 @@ const HomePage = () => {
         {/* Logo container with fixed dimensions and cropping */}
         <div className="relative w-48 h-48 overflow-hidden rounded-full z-10">
           <img
-            src="/Artboard 7-8.png"
+            src="/Artboard 18-8.png"
             alt="DevelMo Logo"
             className="w-full h-full object-cover"
           />
