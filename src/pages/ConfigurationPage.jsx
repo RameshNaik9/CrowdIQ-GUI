@@ -156,9 +156,11 @@ const ConfigurationPage = () => {
             />
             {/* Modal Content */}
             <div
-              className={`relative bg-gray-900 p-6 rounded-lg shadow-lg z-10 max-w-4xl w-full ${
-                selectedCamera === "rtsp" ? "h-[600px] overflow-y-auto" : "h-auto"
-              }`}
+              // className={`relative bg-gray-900 p-6 rounded-lg shadow-lg z-10 max-w-4xl w-full ${
+              //   selectedCamera === "rtsp" ? "h-[600px] overflow-y-auto" : "h-auto"
+              // }`}
+                   className="relative bg-gray-900 p-6 rounded-lg shadow-lg z-10 max-w-4xl w-full
+                max-h-[80vh] overflow-y-auto"
             >
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-white"
